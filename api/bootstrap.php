@@ -53,7 +53,7 @@ function allowedOrigin(): ?string
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
     $allowed = array_filter(array_map('trim', explode(',', envValue(
         'NODECONNECT_ALLOWED_ORIGINS',
-        'http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175,http://localhost:5173,http://localhost:5174,http://localhost:5175'
+        'https://canopynodeconnect.com,https://www.canopynodeconnect.com,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175,http://localhost:5173,http://localhost:5174,http://localhost:5175'
     ))));
 
     return in_array($origin, $allowed, true) ? $origin : null;
@@ -137,10 +137,11 @@ function safeUser(array $user): array
 
 function sessionCookieOptions(int $expires): array
 {
+    $secureOverride = filter_var(envValue('NODECONNECT_COOKIE_SECURE'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     return [
         'expires' => $expires,
         'path' => '/',
-        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'secure' => $secureOverride ?? (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
         'httponly' => true,
         'samesite' => 'Lax',
     ];
