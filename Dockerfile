@@ -6,9 +6,12 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && php -r 'foreach (["PDO", "pdo_mysql", "curl", "openssl"] as $extension) { if (!extension_loaded($extension)) { fwrite(STDERR, "Missing PHP extension: {$extension}\\n"); exit(1); } }'
 
-# Fix: ensure only one MPM (prefork) is enabled
-RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
-    && a2enmod mpm_prefork
+# Fix: force only mpm_prefork to be enabled (direct symlink control)
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf \
+    /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf \
+    && ln -sf ../mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load \
+    && ln -sf ../mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf \
+    && ls -la /etc/apache2/mods-enabled/ | grep -i mpm
 
 RUN sed -ri 's!/var/www/html!/var/www/html/api!g' /etc/apache2/sites-available/*.conf
 
