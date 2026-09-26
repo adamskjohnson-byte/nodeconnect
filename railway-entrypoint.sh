@@ -1,8 +1,10 @@
 #!/bin/sh
 set -eu
 
-echo "---- DEBUG: searching for all MPM LoadModule references ----"
-grep -rn "LoadModule mpm" /etc/apache2/ 2>/dev/null || true
+echo "---- DEBUG: mods-enabled MPM symlinks ----"
+ls -la /etc/apache2/mods-enabled/ | grep -i mpm || echo "none found"
+echo "---- DEBUG: apache2ctl -M (loaded modules) ----"
+apache2ctl -M 2>&1 | grep -i mpm || echo "apache2ctl failed or no mpm shown"
 echo "---- END DEBUG ----"
 
 port="${PORT:-8080}"
