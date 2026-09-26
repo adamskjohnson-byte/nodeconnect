@@ -6,6 +6,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && php -r 'foreach (["PDO", "pdo_mysql", "curl", "openssl"] as $extension) { if (!extension_loaded($extension)) { fwrite(STDERR, "Missing PHP extension: {$extension}\\n"); exit(1); } }'
 
+# Fix: ensure only one MPM (prefork) is enabled
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
+    && a2enmod mpm_prefork
+
 RUN sed -ri 's!/var/www/html!/var/www/html/api!g' /etc/apache2/sites-available/*.conf
 
 COPY api/ /var/www/html/api/
