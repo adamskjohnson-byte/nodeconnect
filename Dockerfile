@@ -1,3 +1,8 @@
+FROM composer:2 AS composer-deps
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --prefer-dist --classmap-authoritative
+
 FROM php:8.3-apache-bookworm
 
 RUN apt-get update \
@@ -16,6 +21,7 @@ RUN rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm
 RUN sed -ri 's!/var/www/html!/var/www/html/api!g' /etc/apache2/sites-available/*.conf
 
 COPY api/ /var/www/html/api/
+COPY --from=composer-deps /app/vendor/ /var/www/html/api/vendor/
 COPY railway-entrypoint.sh /usr/local/bin/railway-entrypoint
 RUN chmod 0755 /usr/local/bin/railway-entrypoint
 

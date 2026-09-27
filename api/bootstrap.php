@@ -1,6 +1,14 @@
 <?php
 declare(strict_types=1);
 
+$autoloadFiles = [__DIR__ . '/vendor/autoload.php', dirname(__DIR__) . '/vendor/autoload.php'];
+foreach ($autoloadFiles as $autoloadFile) {
+    if (is_readable($autoloadFile)) {
+        require_once $autoloadFile;
+        break;
+    }
+}
+
 const AUTH_COOKIE = 'nodeconnect_session';
 const SESSION_LIFETIME = 604800;
 
@@ -62,13 +70,16 @@ function allowedOrigin(): ?string
 function configureResponse(): void
 {
     header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: no-referrer');
     $origin = allowedOrigin();
     if ($origin !== null) {
         header('Access-Control-Allow-Origin: ' . $origin);
         header('Access-Control-Allow-Credentials: true');
         header('Vary: Origin');
     }
-    header('Access-Control-Allow-Headers: Content-Type');
+    header('Access-Control-Allow-Headers: Content-Type, X-CSRF-Token');
     header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 
     if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
@@ -130,6 +141,7 @@ function safeUser(array $user): array
         'email' => $user['email'],
         'status' => $user['status'],
         'role' => $user['role'] ?? 'user',
+        'email_verified_at' => $user['email_verified_at'] ?? null,
         'created_at' => $user['created_at'],
         'last_login_at' => $user['last_login_at'],
     ];
@@ -152,15 +164,37 @@ function establishSession(PDO $pdo, int $userId): void
     $token = bin2hex(random_bytes(32));
     $tokenHash = hash('sha256', $token);
     $expiresAt = (new DateTimeImmutable('+' . SESSION_LIFETIME . ' seconds'))->format('Y-m-d H:i:s');
+    $userAgent = activityUserAgent();
+    $agentInfo = parseActivityUserAgent($userAgent);
 
-    $statement = $pdo->prepare('INSERT INTO auth_sessions (user_id, session_token_hash, expires_at) VALUES (:user_id, :token_hash, :expires_at)');
+    $statement = $pdo->prepare(
+        'INSERT INTO auth_sessions (user_id, session_token_hash, expires_at, ip_address, user_agent, device_type, browser, operating_system)
+         VALUES (:user_id, :token_hash, :expires_at, :ip_address, :user_agent, :device_type, :browser, :operating_system)'
+    );
     $statement->execute([
         ':user_id' => $userId,
         ':token_hash' => $tokenHash,
         ':expires_at' => $expiresAt,
+        ':ip_address' => activityClientIp(),
+        ':user_agent' => $userAgent !== '' ? substr($userAgent, 0, 500) : null,
+        ':device_type' => $agentInfo['device_type'],
+        ':browser' => $agentInfo['browser'],
+        ':operating_system' => $agentInfo['operating_system'],
     ]);
 
     setcookie(AUTH_COOKIE, $token, sessionCookieOptions(time() + SESSION_LIFETIME));
+}
+
+function currentSessionId(PDO $pdo): ?int
+{
+    $token = $_COOKIE[AUTH_COOKIE] ?? '';
+    if (!is_string($token) || !preg_match('/^[a-f0-9]{64}$/', $token)) {
+        return null;
+    }
+    $statement = $pdo->prepare('SELECT id FROM auth_sessions WHERE session_token_hash = :token_hash AND expires_at > CURRENT_TIMESTAMP LIMIT 1');
+    $statement->execute([':token_hash' => hash('sha256', $token)]);
+    $sessionId = $statement->fetchColumn();
+    return $sessionId === false ? null : (int) $sessionId;
 }
 
 function currentUser(PDO $pdo): ?array
@@ -172,7 +206,7 @@ function currentUser(PDO $pdo): ?array
 
     $tokenHash = hash('sha256', $token);
     $statement = $pdo->prepare(
-        'SELECT u.id, u.full_name, u.email, u.status, u.role, u.created_at, u.last_login_at, s.id AS session_id
+        'SELECT u.id, u.full_name, u.email, u.status, u.role, u.email_verified_at, u.created_at, u.last_login_at, s.id AS session_id
          FROM auth_sessions s
          INNER JOIN users u ON u.id = s.user_id
          WHERE s.session_token_hash = :token_hash AND s.expires_at > CURRENT_TIMESTAMP
@@ -241,4 +275,5 @@ function handleServerError(Throwable $error): never
 }
 
 loadEnvironmentFile();
+require_once __DIR__ . '/activity_helpers.php';
 configureResponse();

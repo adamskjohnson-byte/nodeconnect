@@ -5,5 +5,6 @@ import './styles/globals.css'
 import './styles/home.css'
 import './styles/wallet.css'
 import './styles/auth.css'
+import './styles/account-theme.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>)

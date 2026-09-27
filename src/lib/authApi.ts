@@ -4,11 +4,12 @@ export type AuthUser = {
   email: string
   status: 'active' | 'suspended' | 'disabled'
   role: 'user' | 'admin'
+  email_verified_at: string | null
   created_at: string
   last_login_at: string | null
 }
 
-type ApiResponse = { success: boolean; message?: string; user?: AuthUser }
+export type ApiResponse = { success: boolean; message?: string; user?: AuthUser; requires_2fa?: boolean; verification_email_sent?: boolean }
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1/nodeconnect/api').replace(/\/$/, '')
 
@@ -34,6 +35,7 @@ async function request(path: string, options: RequestInit = {}): Promise<ApiResp
 
 export const register = (data: { full_name: string; email: string; password: string; confirm_password: string }) => request('/auth/register.php', { method: 'POST', body: JSON.stringify(data) })
 export const login = (data: { email: string; password: string }) => request('/auth/login.php', { method: 'POST', body: JSON.stringify(data) })
+export const verifyLoginTwoFactor = (code: string) => request('/auth/verify-2fa.php', { method: 'POST', body: JSON.stringify({ code }) })
 export const getCurrentUser = async (): Promise<AuthUser | null> => {
   try {
     const response = await request('/auth/me.php')

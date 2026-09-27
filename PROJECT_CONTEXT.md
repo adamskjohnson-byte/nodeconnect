@@ -259,16 +259,17 @@ The page uses the supplied black, navy, neon green, cyan, lilac, and pink palett
 
 ## Profile and Settings Pages
 
-- Added the UI-only `#profile` and `#settings` pages inside the shared `DashboardLayout` shell.
-- Profile includes static account, personal information, wallet connection, and membership sections. Its Connect Wallet action uses the existing `#connect-wallet` route.
-- Settings includes appearance, sound, notification, security, and account controls. Theme, sound, notification, security, and account controls are visual-only and do not persist.
-- Profile reads safe authenticated identity fields from `/api/auth/me.php`; profile/settings persistence and settings backend functionality are not implemented.
+- `#profile` and `#settings` use the shared `DashboardLayout` and preserve the established NodeConnect visual system.
+- Profile reads the authenticated account from `/account/profile.php`, supports validated full-name editing, keeps email read-only, and reflects database role/status. Its Connect Wallet action remains unchanged.
+- Settings reads and persists per-user theme, sound/volume, notification flags, language, and currency through `/settings/preferences.php`.
+- Password changes, active-session listing/revocation, TOTP enrollment/login/recovery codes, verification resend, and soft account deactivation use the existing PHP cookie-session backend and additive endpoints.
+- Account security implementation, migration 002, Resend configuration, limitations, and manual testing are documented in `docs/PROFILE_SETTINGS.md`.
 
 ## Authentication Backend
 
 - Added PHP endpoints under `api/auth/`: `register.php`, `login.php`, `logout.php`, and `me.php`, sharing PDO/CORS/session logic from `api/bootstrap.php`.
 - The database is `nodeconnect` using the existing `users`, `auth_sessions`, `password_reset_tokens`, and `auth_activity` schema tables.
-- Authentication sessions use a cryptographically random token in an HttpOnly cookie while only its SHA-256 hash is stored in `auth_sessions`.
+- Authentication sessions use a cryptographically random token in an HttpOnly cookie while only its SHA-256 hash is stored in `auth_sessions`. Migration 002 adds non-secret client metadata for session management.
 - Local configuration can use the XAMPP defaults in `.env.example`; production deployments should provide the same `NODECONNECT_*` variables through the server environment.
 
 ## My Nodes Page
@@ -287,3 +288,13 @@ The page uses the supplied black, navy, neon green, cyan, lilac, and pink palett
 - IP location is approximate and server-side through the configurable `NODECONNECT_GEOLOCATION_URL` provider. Browser GPS is never requested.
 - Telegram secrets remain server-side in `.env`; configuration and phpMyAdmin/BotFather instructions are documented in `docs/ADMIN_ACTIVITY.md`.
 - Admin monitoring now has a separate `AdminLayout` application shell at `#admin` and `#admin/activity`. Admin login defaults to `#admin`; normal users default to `#dashboard`, and protected admin destinations are preserved through the auth flow.
+
+## Profile, Settings, and Account Security
+
+- Added manual one-time migration `database/migrations/002_account_security.sql` for user preferences, email verification tokens, TOTP factors/recovery codes/challenges, security audit/rate-limit tables, session metadata, and account deactivation timestamp. It reuses `password_reset_tokens`; it does not alter `admin_activity`.
+- `Profile.tsx` loads authenticated user data through `/account/profile.php`, supports validated full-name editing, keeps email read-only, reflects actual role/status, and can request verification email resend.
+- `Settings.tsx` persists account preferences through `/settings/preferences.php`, applies dark/light/system theme, supports password changes, active-session revocation, TOTP setup/login/disable/recovery codes, verification resend, and soft account deactivation.
+- Auth retains the PHP `auth_sessions` architecture and role routing. New verified-email status is informational; email verification does not block sign-in for legacy or new accounts.
+- Resend runs only in PHP through `api/email_service.php`; configure `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `RESEND_FROM_NAME` only on the PHP host. TOTP seed encryption and persistent rate limits use separate server-side keys.
+- Composer locks `pragmarx/google2fa`; Railway's Docker build installs locked PHP dependencies. Setup, migration, limitations, and test steps are in `docs/PROFILE_SETTINGS.md`.
+- Apply migration 002 manually and once in local/Railway MySQL before testing these account endpoints. No database migration was run automatically.

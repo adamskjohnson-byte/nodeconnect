@@ -14,6 +14,7 @@ import AdminActivity from './pages/AdminActivity'
 import AdminDashboard from './pages/AdminDashboard'
 import { getCurrentUser, type AuthUser } from './lib/authApi'
 import { trackActivity } from './lib/activityApi'
+import { getPreferences } from './lib/accountApi'
 
 const normalProtectedHashes = new Set(['#dashboard', '#connect-wallet', '#staking', '#tokenomics', '#roadmap', '#transaction-history', '#referrals', '#my-nodes', '#profile', '#settings'])
 const adminProtectedHashes = new Set(['#admin', '#admin/activity'])
@@ -23,6 +24,48 @@ export default function App() {
 	const [hash, setHash] = useState(() => window.location.hash)
 	const [authUser, setAuthUser] = useState<AuthUser | null>(null)
 	const [authChecked, setAuthChecked] = useState(false)
+	const [savedTheme, setSavedTheme] = useState(() => {
+		try {
+			const preferences = localStorage.getItem('nodeconnect_preferences')
+			return preferences ? (JSON.parse(preferences) as { theme?: string }).theme || 'dark' : 'dark'
+		} catch {
+			return 'dark'
+		}
+	})
+
+	useEffect(() => {
+		let active = true
+		getCurrentUser().then((user) => {
+			if (active) setAuthUser(user)
+		}).catch(() => {
+			if (active) setAuthUser(null)
+		})
+		return () => { active = false }
+	}, [])
+
+	useEffect(() => {
+		let active = true
+		if (!authUser) return () => { active = false }
+		getPreferences().then((preferences) => {
+			if (!active) return
+			setSavedTheme(preferences.theme)
+			try { localStorage.setItem('nodeconnect_preferences', JSON.stringify(preferences)) } catch { /* storage is optional */ }
+		}).catch(() => undefined)
+		return () => { active = false }
+	}, [authUser])
+
+	useEffect(() => {
+		const applyTheme = () => {
+			const theme = savedTheme === 'system'
+				? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+				: savedTheme
+			document.documentElement.dataset.theme = theme
+		}
+		applyTheme()
+		const media = window.matchMedia('(prefers-color-scheme: light)')
+		media.addEventListener('change', applyTheme)
+		return () => media.removeEventListener('change', applyTheme)
+	}, [savedTheme])
 
 	useEffect(() => {
 		try {

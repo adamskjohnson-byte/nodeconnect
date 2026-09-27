@@ -4,7 +4,7 @@ This project keeps the existing React frontend on Vercel and the existing PHP AP
 
 ## Runtime
 
-Railway should deploy the repository as a Docker service using the root `Dockerfile`. The image uses `php:8.3-apache-bookworm`, installs `pdo_mysql` and `curl`, and verifies `PDO`, `pdo_mysql`, `curl`, and `openssl` are loaded. The PHP image supplies the OpenSSL extension and CA certificate bundle needed for HTTPS calls.
+Railway should deploy the repository as a Docker service using the root `Dockerfile`. The image uses `php:8.3-apache-bookworm`, installs `pdo_mysql` and `curl`, and verifies `PDO`, `pdo_mysql`, `curl`, and `openssl` are loaded. The PHP image supplies the OpenSSL extension and CA certificate bundle needed for HTTPS calls. Composer installs dependencies from the committed lockfile; account TOTP uses `pragmarx/google2fa`.
 
 The container serves `/var/www/html/api` as Apache's document root. `railway-entrypoint.sh` reads Railway's numeric `PORT`, updates Apache's listen and virtual-host ports, and starts Apache in the foreground. No local port is baked into the runtime; `8080` is only a fallback for local container runs without `PORT`.
 
@@ -47,9 +47,18 @@ NODECONNECT_COOKIE_SECURE=true
 TELEGRAM_BOT_TOKEN=<set as a Railway secret variable>
 TELEGRAM_ADMIN_CHAT_ID=<set as a Railway variable>
 NODECONNECT_GEOLOCATION_URL=https://ipwho.is
+NODECONNECT_ENV=production
+NODECONNECT_FRONTEND_URL=https://canopynodeconnect.com
+NODECONNECT_2FA_ENCRYPTION_KEY=<base64 encoding of 32 random bytes>
+NODECONNECT_RATE_LIMIT_KEY=<at least 32 random characters>
+RESEND_API_KEY=<Railway PHP API secret>
+RESEND_FROM_EMAIL=no-reply@canopynodeconnect.com
+RESEND_FROM_NAME=NodeConnect
 ```
 
 Keep Telegram token and database credentials as Railway service variables, never as Vercel variables and never with a `VITE_` prefix. `.dockerignore` excludes root and nested `.env` files from the image build context. Git already ignores `.env` and `.env.*` while allowing the safe `.env.example` template.
+
+The account-security feature also requires applying `database/migrations/002_account_security.sql` once to the existing Railway MySQL database. Never apply the local XAMPP database to Railway. See [PROFILE_SETTINGS.md](PROFILE_SETTINGS.md) for the complete migration, Resend, encryption-key, and account workflow notes.
 
 ## CORS and authentication cookies
 
