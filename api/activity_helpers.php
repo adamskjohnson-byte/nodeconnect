@@ -5,6 +5,17 @@ const TRACKED_ACTIVITY_EVENTS = ['site_visit', 'telegram_click'];
 
 function activityClientIp(): ?string
 {
+    $forwardedFor = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
+    if (is_string($forwardedFor) && $forwardedFor !== '') {
+        // Header can contain a comma-separated chain of IPs; the first is the original client.
+        $candidates = array_map('trim', explode(',', $forwardedFor));
+        foreach ($candidates as $candidate) {
+            if (filter_var($candidate, FILTER_VALIDATE_IP)) {
+                return $candidate;
+            }
+        }
+    }
+
     $ip = $_SERVER['REMOTE_ADDR'] ?? null;
     return is_string($ip) && filter_var($ip, FILTER_VALIDATE_IP) ? $ip : null;
 }
