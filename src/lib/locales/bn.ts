@@ -1,5 +1,13 @@
 import type { Translation } from './en'
 const bn: Translation = {
+  'auth.registrationOtpDescription': 'আপনার ইমেইল ঠিকানায় পাঠানো ৬ সংখ্যার কোডটি লিখুন।',
+  'auth.verificationCodeSentTo': '{{email}} ঠিকানায় একটি যাচাইকরণ কোড পাঠানো হয়েছে।',
+  'auth.verificationCode': '৬ সংখ্যার যাচাইকরণ কোড',
+  'auth.verifyEmailCode': 'ইমেইল যাচাই করুন',
+  'auth.resendCode': 'কোড আবার পাঠান',
+  'auth.resendCooldown': '{{seconds}} সেকেন্ড পরে আবার পাঠান',
+  'auth.registrationVerified': 'আপনার ইমেইল যাচাই করা হয়েছে। চালিয়ে যেতে সাইন ইন করুন।',
+  'auth.verificationCodeRequested': 'এই অ্যাকাউন্টে যাচাইকরণ প্রয়োজন হলে শীঘ্রই একটি নতুন কোড পাঠানো হবে।',
     'settings.enableTwoFactor': 'দুই-ধাপ যাচাইকরণ চালু করুন',
     'transactions.activityStake': 'স্টেক', 'transactions.activityClaim': 'দাবি', 'transactions.activityVote': 'ভোট',
     'transactions.epochComparison': 'গত epoch-এর তুলনায় {{change}}', 'transactions.trailingComparison': 'গত ৩০ দিনের চলমান সময়ে {{change}}',

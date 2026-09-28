@@ -1,5 +1,13 @@
 import type { Translation } from './en'
 const id: Translation = {
+  'auth.registrationOtpDescription': 'Masukkan kode 6 digit yang dikirim ke alamat email Anda.',
+  'auth.verificationCodeSentTo': 'Kami mengirim kode verifikasi ke {{email}}.',
+  'auth.verificationCode': 'Kode verifikasi 6 digit',
+  'auth.verifyEmailCode': 'Verifikasi email',
+  'auth.resendCode': 'Kirim ulang kode',
+  'auth.resendCooldown': 'Kirim ulang dalam {{seconds}} dtk',
+  'auth.registrationVerified': 'Email Anda telah diverifikasi. Masuk untuk melanjutkan.',
+  'auth.verificationCodeRequested': 'Jika akun ini memerlukan verifikasi, kode baru akan segera dikirim.',
     'settings.enableTwoFactor': 'Aktifkan autentikasi dua faktor',
     'transactions.activityStake': 'Staking', 'transactions.activityClaim': 'Klaim', 'transactions.activityVote': 'Pemungutan suara',
     'transactions.epochComparison': '{{change}} dibandingkan epoch sebelumnya', 'transactions.trailingComparison': '{{change}} dalam 30 hari terakhir',

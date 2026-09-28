@@ -35,6 +35,15 @@ try {
     if ($user['status'] !== 'active') {
         respond(['success' => false, 'message' => 'Your account is currently unavailable.'], 403);
     }
+    if (empty($user['email_verified_at'])) {
+        $pdo->prepare('DELETE FROM auth_sessions WHERE user_id = :user_id')->execute([':user_id' => $user['id']]);
+        $pdo->prepare('DELETE FROM auth_login_challenges WHERE user_id = :user_id')->execute([':user_id' => $user['id']]);
+        clearCurrentSession($pdo);
+        setcookie('nodeconnect_2fa_challenge', '', sessionCookieOptions(time() - 3600));
+        $verificationEmailSent = issueEmailVerificationOtp($pdo, $user);
+        unset($password, $user['password_hash']);
+        respond(['success' => false, 'code' => 'EMAIL_NOT_VERIFIED', 'verification_email_sent' => $verificationEmailSent, 'message' => 'Verify your email address before signing in.'], 403);
+    }
 
     $twoFactor = $pdo->prepare('SELECT enabled_at FROM user_two_factor WHERE user_id = :user_id LIMIT 1');
     $twoFactor->execute([':user_id' => $user['id']]);

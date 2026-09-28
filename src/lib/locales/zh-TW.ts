@@ -1,6 +1,14 @@
 import type { Translation } from './en'
 
 const zhTW: Translation = {
+  'auth.registrationOtpDescription': '請輸入寄至您電子郵件地址的 6 位數驗證碼。',
+  'auth.verificationCodeSentTo': '我們已將驗證碼寄至 {{email}}。',
+  'auth.verificationCode': '6 位數驗證碼',
+  'auth.verifyEmailCode': '驗證電子郵件',
+  'auth.resendCode': '重新寄送驗證碼',
+  'auth.resendCooldown': '{{seconds}} 秒後重新寄送',
+  'auth.registrationVerified': '電子郵件已驗證。請登入以繼續。',
+  'auth.verificationCodeRequested': '如果此帳戶需要驗證，我們很快會寄送新的驗證碼。',
   'nav.home': '首頁', 'nav.signIn': '登入', 'nav.createAccount': '建立帳戶', 'nav.dashboard': '控制台', 'nav.connectWallet': '連結錢包', 'nav.staking': '質押', 'nav.tokenomics': '代幣經濟學', 'nav.roadmap': '發展藍圖', 'nav.transactions': '交易紀錄', 'nav.myNodes': '我的節點', 'nav.profile': '個人資料', 'nav.settings': '設定', 'nav.logout': '登出', 'nav.workspace': '工作區', 'nav.admin': '管理控制台', 'nav.activity': '訪客活動',
   'common.loading': '載入中...', 'common.loadingSettings': '正在載入已儲存的設定...', 'common.loadingProfile': '正在載入個人資料...', 'common.saving': '儲存中...', 'common.pleaseWait': '請稍候...', 'common.save': '儲存', 'common.saveChanges': '儲存變更', 'common.cancel': '取消', 'common.close': '關閉', 'common.continue': '繼續', 'common.back': '返回', 'common.backHome': '返回首頁', 'common.retry': '重試', 'common.copy': '複製', 'common.copied': '已複製', 'common.edit': '編輯', 'common.editProfile': '編輯個人資料', 'common.fullName': '全名', 'common.emailAddress': '電子郵件地址', 'common.password': '密碼', 'common.currentPassword': '目前密碼', 'common.newPassword': '新密碼', 'common.confirmPassword': '確認密碼', 'common.unknown': '未知', 'common.notAvailable': '無法使用', 'common.notConnected': '未連線', 'common.enabled': '已啟用', 'common.disabled': '已停用', 'common.on': '開', 'common.off': '關', 'common.status': '狀態', 'common.amount': '金額', 'common.type': '類型', 'common.dateTime': '日期 / 時間', 'common.page': '頁', 'common.network': '網路', 'common.activity': '活動', 'common.account': '帳戶', 'common.member': '成員', 'common.administrator': '管理員',
   'home.heroTitle': '拓展資料。創造價值。攜手成長。', 'home.heroDescription': 'NodeConnect 是去中心化資料基礎設施，以隱私、永續發展和獎勵機制推動 Web3 前沿。', 'home.whyTitle': '為什麼選擇 NODECONNECT？', 'home.secureTitle': '去中心化且安全', 'home.secureDescription': '建構於去中心化基礎設施，並採用端對端加密與隱私保護。', 'home.sustainableTitle': '以永續為設計理念', 'home.sustainableDescription': '環保網路，鼓勵綠色節點與永續成長。', 'home.utilityTitle': '實際應用價值', 'home.utilityDescription': '以去中心化資料為 dApp、AI 和企業解決方案提供動力。', 'home.rewardsTitle': '社群獎勵', 'home.rewardsDescription': '透過質押、推薦和生態系發展提供由社群驅動的獎勵。',

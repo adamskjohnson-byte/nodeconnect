@@ -1,6 +1,14 @@
 import type { Translation } from './en'
 
 const zhCN: Translation = {
+  'auth.registrationOtpDescription': '请输入发送到您电子邮箱的 6 位验证码。',
+  'auth.verificationCodeSentTo': '验证码已发送至 {{email}}。',
+  'auth.verificationCode': '6 位验证码',
+  'auth.verifyEmailCode': '验证邮箱',
+  'auth.resendCode': '重新发送验证码',
+  'auth.resendCooldown': '{{seconds}} 秒后重新发送',
+  'auth.registrationVerified': '邮箱已验证。请登录以继续。',
+  'auth.verificationCodeRequested': '如果此账户需要验证，我们很快会发送新的验证码。',
   'nav.home': '首页', 'nav.signIn': '登录', 'nav.createAccount': '创建账户', 'nav.dashboard': '控制台', 'nav.connectWallet': '连接钱包', 'nav.staking': '质押', 'nav.tokenomics': '代币经济学', 'nav.roadmap': '路线图', 'nav.transactions': '交易记录', 'nav.myNodes': '我的节点', 'nav.profile': '个人资料', 'nav.settings': '设置', 'nav.logout': '退出登录', 'nav.workspace': '工作区', 'nav.admin': '管理控制台', 'nav.activity': '访客活动',
   'common.loading': '正在加载...', 'common.loadingSettings': '正在加载已保存的设置...', 'common.loadingProfile': '正在加载个人资料...', 'common.saving': '正在保存...', 'common.pleaseWait': '请稍候...', 'common.save': '保存', 'common.saveChanges': '保存更改', 'common.cancel': '取消', 'common.close': '关闭', 'common.continue': '继续', 'common.back': '返回', 'common.backHome': '返回首页', 'common.retry': '重试', 'common.copy': '复制', 'common.copied': '已复制', 'common.edit': '编辑', 'common.editProfile': '编辑个人资料', 'common.fullName': '全名', 'common.emailAddress': '电子邮箱地址', 'common.password': '密码', 'common.currentPassword': '当前密码', 'common.newPassword': '新密码', 'common.confirmPassword': '确认密码', 'common.unknown': '未知', 'common.notAvailable': '不可用', 'common.notConnected': '未连接', 'common.enabled': '已启用', 'common.disabled': '已停用', 'common.on': '开', 'common.off': '关', 'common.status': '状态', 'common.amount': '金额', 'common.type': '类型', 'common.dateTime': '日期 / 时间', 'common.page': '页', 'common.network': '网络', 'common.activity': '活动', 'common.account': '账户', 'common.member': '成员', 'common.administrator': '管理员',
   'home.heroTitle': '拓展数据。创造价值。携手共进。', 'home.heroDescription': 'NodeConnect 是去中心化数据基础设施，以隐私保护、可持续发展和奖励机制推动 Web3 前沿发展。', 'home.whyTitle': '为什么选择 NODECONNECT？', 'home.secureTitle': '去中心化且安全', 'home.secureDescription': '构建于去中心化基础设施之上，并提供端到端加密和隐私保护。', 'home.sustainableTitle': '以可持续为设计理念', 'home.sustainableDescription': '环保网络，激励绿色节点与可持续增长。', 'home.utilityTitle': '真实世界效用', 'home.utilityDescription': '以去中心化数据为 dApp、AI 和企业解决方案提供动力。', 'home.rewardsTitle': '社区奖励', 'home.rewardsDescription': '通过质押、推荐和生态发展提供由社区驱动的奖励。',

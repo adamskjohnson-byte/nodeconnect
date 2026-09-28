@@ -1,6 +1,14 @@
 import type { Translation } from './en'
 
 const ko: Translation = {
+  'auth.registrationOtpDescription': '이메일 주소로 전송된 6자리 코드를 입력하세요.',
+  'auth.verificationCodeSentTo': '{{email}} 주소로 인증 코드를 보냈습니다.',
+  'auth.verificationCode': '6자리 인증 코드',
+  'auth.verifyEmailCode': '이메일 인증',
+  'auth.resendCode': '코드 다시 보내기',
+  'auth.resendCooldown': '{{seconds}}초 후 다시 보내기',
+  'auth.registrationVerified': '이메일 인증이 완료되었습니다. 계속하려면 로그인하세요.',
+  'auth.verificationCodeRequested': '이 계정에 인증이 필요한 경우 새 코드를 곧 보내드립니다.',
   'nav.home': '홈', 'nav.signIn': '로그인', 'nav.createAccount': '계정 만들기', 'nav.dashboard': '대시보드', 'nav.connectWallet': '지갑 연결', 'nav.staking': '스테이킹', 'nav.tokenomics': '토크노믹스', 'nav.roadmap': '로드맵', 'nav.transactions': '거래 내역', 'nav.myNodes': '내 노드', 'nav.profile': '프로필', 'nav.settings': '설정', 'nav.logout': '로그아웃', 'nav.workspace': '작업 공간', 'nav.admin': '관리자 대시보드', 'nav.activity': '방문자 활동',
   'common.loading': '불러오는 중...', 'common.loadingSettings': '저장된 설정을 불러오는 중...', 'common.loadingProfile': '프로필을 불러오는 중...', 'common.saving': '저장 중...', 'common.pleaseWait': '잠시 기다려 주세요...', 'common.save': '저장', 'common.saveChanges': '변경 사항 저장', 'common.cancel': '취소', 'common.close': '닫기', 'common.continue': '계속', 'common.back': '뒤로', 'common.backHome': '홈으로', 'common.retry': '다시 시도', 'common.copy': '복사', 'common.copied': '복사됨', 'common.edit': '편집', 'common.editProfile': '프로필 편집', 'common.fullName': '이름', 'common.emailAddress': '이메일 주소', 'common.password': '비밀번호', 'common.currentPassword': '현재 비밀번호', 'common.newPassword': '새 비밀번호', 'common.confirmPassword': '비밀번호 확인', 'common.unknown': '알 수 없음', 'common.notAvailable': '사용할 수 없음', 'common.notConnected': '연결되지 않음', 'common.enabled': '사용', 'common.disabled': '사용 안 함', 'common.on': '켜짐', 'common.off': '꺼짐', 'common.status': '상태', 'common.amount': '금액', 'common.type': '유형', 'common.dateTime': '날짜 / 시간', 'common.page': '페이지', 'common.network': '네트워크', 'common.activity': '활동', 'common.account': '계정', 'common.member': '회원', 'common.administrator': '관리자',
   'home.heroTitle': '데이터를 키우고, 가치를 키우고, 함께 성장하세요.', 'home.heroDescription': 'NodeConnect는 개인정보 보호, 지속 가능성, 보상을 바탕으로 Web3의 미래를 지원하는 탈중앙화 데이터 인프라입니다.', 'home.whyTitle': '왜 NODECONNECT인가요?', 'home.secureTitle': '탈중앙화 및 보안', 'home.secureDescription': '탈중앙화 인프라를 기반으로 종단 간 암호화와 개인정보 보호를 제공합니다.', 'home.sustainableTitle': '지속 가능성을 고려한 설계', 'home.sustainableDescription': '친환경 네트워크로 그린 노드와 지속 가능한 성장을 지원합니다.', 'home.utilityTitle': '실제 활용성', 'home.utilityDescription': '탈중앙화 데이터로 dApp, AI 및 기업 솔루션을 지원합니다.', 'home.rewardsTitle': '커뮤니티 보상', 'home.rewardsDescription': '스테이킹, 추천 및 생태계 성장을 통해 커뮤니티에 보상을 제공합니다.',

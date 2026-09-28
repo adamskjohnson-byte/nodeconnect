@@ -1,5 +1,13 @@
 import type { Translation } from './en'
 const th: Translation = {
+  'auth.registrationOtpDescription': 'ป้อนรหัส 6 หลักที่ส่งไปยังที่อยู่อีเมลของคุณ',
+  'auth.verificationCodeSentTo': 'เราส่งรหัสยืนยันไปที่ {{email}} แล้ว',
+  'auth.verificationCode': 'รหัสยืนยัน 6 หลัก',
+  'auth.verifyEmailCode': 'ยืนยันอีเมล',
+  'auth.resendCode': 'ส่งรหัสอีกครั้ง',
+  'auth.resendCooldown': 'ส่งอีกครั้งใน {{seconds}} วินาที',
+  'auth.registrationVerified': 'ยืนยันอีเมลแล้ว ลงชื่อเข้าใช้เพื่อดำเนินการต่อ',
+  'auth.verificationCodeRequested': 'หากบัญชีนี้ต้องยืนยัน เราจะส่งรหัสใหม่ให้ในไม่ช้า',
     "settings.enableTwoFactor": "เปิดใช้การยืนยันตัวตนสองขั้นตอน",
     "transactions.activityStake": "Stake",
     "transactions.activityClaim": "รับ",

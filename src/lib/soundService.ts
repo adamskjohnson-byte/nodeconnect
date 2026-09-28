@@ -1,9 +1,12 @@
-type SoundName = 'toggle' | 'success' | 'copy'
+type SoundName = 'click' | 'toggle' | 'success' | 'copy'
 type Tone = { frequency: number; duration: number; delay?: number }
 
 let enabled = true
 let volume = 70
 let audioContext: AudioContext | null = null
+let currentClickEvent: Event | null = null
+let interactionsInstalled = false
+const explicitlyHandledClicks = new WeakSet<Event>()
 
 try {
   const stored = localStorage.getItem('nodeconnect_preferences')
@@ -22,6 +25,7 @@ export function setSoundPreferences(soundEnabled: boolean, soundVolume: number):
 }
 
 export function playUiSound(name: SoundName): void {
+  if (currentClickEvent) explicitlyHandledClicks.add(currentClickEvent)
   if (!enabled || volume === 0 || typeof window === 'undefined') return
   const AudioContextConstructor = window.AudioContext
   if (!AudioContextConstructor) return
@@ -32,6 +36,7 @@ export function playUiSound(name: SoundName): void {
     void context.resume().then(() => {
       if (!enabled || volume === 0) return
       const patterns: Record<SoundName, Tone[]> = {
+        click: [{ frequency: 520, duration: 0.035 }],
         toggle: [{ frequency: 590, duration: 0.055 }],
         success: [{ frequency: 660, duration: 0.075 }, { frequency: 880, duration: 0.09, delay: 0.07 }],
         copy: [{ frequency: 760, duration: 0.045 }, { frequency: 1040, duration: 0.06, delay: 0.045 }],
@@ -56,4 +61,28 @@ export function playUiSound(name: SoundName): void {
   } catch {
     // Optional UI audio must not interrupt an account action.
   }
+}
+
+export function installGlobalSoundInteractions(): void {
+  if (interactionsInstalled || typeof document === 'undefined') return
+  interactionsInstalled = true
+
+  const markClickEvent = (event: Event) => {
+    currentClickEvent = event
+    queueMicrotask(() => {
+      if (currentClickEvent === event) currentClickEvent = null
+    })
+  }
+
+  const playForAction = (event: MouseEvent) => {
+    const target = event.target instanceof Element ? event.target : null
+    const control = target?.closest('button, a[href], select, input[type="button"], input[type="submit"], input[type="reset"], input[type="checkbox"], input[type="radio"], input[type="range"], [role="button"], [role="tab"], [role="switch"], [role="checkbox"], [role="radio"], [role="menuitem"], [data-sound-interaction]')
+    if (!control || control instanceof HTMLButtonElement && control.disabled || control.getAttribute('aria-disabled') === 'true') return
+    if (control.getAttribute('data-sound-interaction') === 'managed' || control.getAttribute('data-sound-interaction') === 'copy') return
+    if (explicitlyHandledClicks.has(event)) return
+    playUiSound('click')
+  }
+
+  document.addEventListener('click', markClickEvent, true)
+  document.addEventListener('click', playForAction)
 }

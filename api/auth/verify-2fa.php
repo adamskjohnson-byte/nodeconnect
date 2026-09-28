@@ -33,7 +33,7 @@ try {
     );
     $statement->execute([':token_hash' => hash('sha256', $challengeToken)]);
     $challenge = $statement->fetch();
-    if (!$challenge || $challenge['status'] !== 'active' || (int) $challenge['attempts'] >= 5) {
+    if (!$challenge || $challenge['status'] !== 'active' || empty($challenge['email_verified_at']) || (int) $challenge['attempts'] >= 5) {
         if ($challenge) {
             $pdo->prepare('DELETE FROM auth_login_challenges WHERE id = :id')->execute([':id' => $challenge['challenge_id']]);
         }

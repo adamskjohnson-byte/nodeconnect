@@ -236,7 +236,8 @@ The page uses the supplied black, navy, neon green, cyan, lilac, and pink palett
 - The approved `#auth` UI now supports real registration and sign-in through the local PHP/MySQL API; its visual design remains unchanged.
 - Registration writes normalized email, full name, and a `password_hash` to `users`; plaintext passwords are never stored or returned.
 - Login uses `password_verify`, updates `users.last_login_at`, and establishes a hashed server-side session record in `auth_sessions`.
-- `#auth` success navigates to the existing `#connect-wallet` page; wallet selection remains a separate step.
+- Registration creates an unverified account, sends a short-lived six-digit email OTP, and creates no authenticated session. Verification returns the user to sign-in; verified password login then routes to Dashboard (or Admin for an admin user).
+- Password login, session lookup, and stale 2FA challenge completion reject unverified accounts. Unverified session/challenge rows are revoked, and verification clears any prior session/challenge rows so the user must sign in and complete 2FA again.
 - Logout invalidates the server-side session and clears the HttpOnly cookie. `/api/auth/me.php` returns safe authenticated-user data only.
 
 ## Dashboard Page
@@ -294,17 +295,28 @@ The page uses the supplied black, navy, neon green, cyan, lilac, and pink palett
 - Added manual one-time migration `database/migrations/002_account_security.sql` for user preferences, email verification tokens, TOTP factors/recovery codes/challenges, security audit/rate-limit tables, session metadata, and account deactivation timestamp. It reuses `password_reset_tokens`; it does not alter `admin_activity`.
 - `Profile.tsx` loads authenticated user data through `/account/profile.php`, supports validated full-name editing, keeps email read-only, reflects actual role/status, and can request verification email resend.
 - `Settings.tsx` persists account preferences through `/settings/preferences.php`, applies dark/light/system theme, supports password changes, active-session revocation, TOTP setup/login/disable/recovery codes, verification resend, and soft account deactivation.
-- Auth retains the PHP `auth_sessions` architecture and role routing. New verified-email status is informational; email verification does not block sign-in for legacy or new accounts.
+- Auth retains the PHP `auth_sessions` architecture and role routing. Email verification is required before login and protected session access; the email OTP step does not authenticate a user or replace password/2FA checks.
 - Resend runs only in PHP through `api/email_service.php`; configure `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `RESEND_FROM_NAME` only on the PHP host. TOTP seed encryption and persistent rate limits use separate server-side keys.
 - Composer locks `pragmarx/google2fa`; Railway's Docker build installs locked PHP dependencies. Setup, migration, limitations, and test steps are in `docs/PROFILE_SETTINGS.md`.
 - Apply migration 002 manually and once in local/Railway MySQL before testing these account endpoints. No database migration was run automatically.
 
 ## Account Extensions (2026-09)
 
-- Added additive migration `database/migrations/003_profile_email_referral.sql`; apply it manually after migration 002. It creates owner-scoped MySQL profile-image storage, single-user pending email-change state, and unique referral IDs. It was not applied as part of this work.
+- Migration `database/migrations/003_profile_email_referral.sql` adds owner-scoped MySQL profile-image storage, single-user pending email-change state, and unique referral IDs. It was already present in the local database and was not rerun or modified for this work.
 - Profile image bytes use persistent Railway MySQL rather than the ephemeral PHP container filesystem. Uploads accept JPEG/PNG/WebP, max 2 MiB and 2048px dimensions; resizing is not configured because the current PHP image lacks GD.
 - Email change reuses the existing password/session/origin/rate-limit/audit/Resend infrastructure. The current address changes only after a hashed, expiring, single-use confirmation token is redeemed.
 - Existing referral attribution/rewards do not exist. A stable random referral ID is assigned at registration or on the first profile load for an existing user.
 - Existing AES-256-GCM TOTP, login challenge, replay prevention, and recovery-code backend was retained; the Settings enrollment/disable/recovery interface now uses modal steps.
-- `i18next`/`react-i18next` now provide 25 locale choices and Arabic RTL handling with saved account/local preferences. Current translated coverage is limited to shared navigation and core account/settings controls; other routes and server-originated messages still contain English copy. See `docs/PROFILE_SETTINGS.md` for exact validation and limitations.
-- Settings sound now uses a small Web Audio service tied to existing sound preferences. Browser-policy playback behavior still needs a manual audio check.
+- `i18next`/`react-i18next` provide 25 locales and Arabic RTL handling with saved account/local preferences. On 2026-09-27, all 548 keys passed catalog parity/placeholder checks. See `docs/PROFILE_SETTINGS.md` for validation scope and translation-review limits.
+- Sound uses one Web Audio engine and document-level delegated click listener for dynamic actionable controls; saved toggle/volume apply globally. Explicit success, toggle, and copy cues share the same engine and duplicate click cues are suppressed.
+
+## Mandatory Email Verification and Global Sound (2026-09)
+
+- Registration sends a six-digit numeric OTP by Resend, expires it after 10 minutes, stores only a keyed HMAC in the existing `email_verification_tokens` table, invalidates prior verification entries, and does not call `establishSession`.
+- OTP verification consumes the hashed entry once and marks `users.email_verified_at`; it does not create a session. The user signs in with their password afterward and completes the existing TOTP challenge if enabled.
+- Login with valid credentials but an unverified email sends an OTP when send limits allow and returns `EMAIL_NOT_VERIFIED`. `currentUser()` and the 2FA completion endpoint also reject unverified accounts so an older session/challenge cannot bypass verification.
+- Public resend accepts the email in the POST body only, returns a generic non-enumerating response, and enforces per-email one-per-minute/five-per-hour and per-IP hourly limits. OTP checks are limited to five per account per 15 minutes and 20 per IP per 15 minutes. No OTP is placed in a URL, database plaintext, or API response.
+- No additional database migration was required: local metadata confirmed migration 002's `email_verification_tokens`, `security_rate_limits`, and `security_events`, and migration 003's profile/email/referral tables. Migrations 002/003 were not modified or rerun.
+- Resend diagnostics now log request ID, timestamp, endpoint, destination domain, HTTP status, cURL errno/error, and sanitized provider error type/message; they do not log credentials, message bodies, full addresses, OTPs, or tokens. The local configured key returned HTTP 200 from Resend's read-only domains endpoint and the sender domain status was `verified`. No message was sent or received in this validation.
+- Central sound delegation uses the existing `soundService.ts`; click sounds honor persisted sound/volume settings, explicit interactions avoid duplicate click cues, and copy keeps its dedicated two-tone cue. Browser QA measured one delegated cue, no cue after turning sound off, and lower oscillator gain at reduced volume; preferences were restored to ON/70.
+- The Auth OTP screen uses translated content in all 25 locales and masks the displayed email. `PROJECT_CONTEXT.md` and `docs/PROFILE_SETTINGS.md` distinguish the local checks from outstanding real inbox, full TOTP, production Railway, and deployment validation.

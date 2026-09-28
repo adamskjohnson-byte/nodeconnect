@@ -74,6 +74,8 @@ export const disableTwoFactor = (password: string, code: string) => request<{ su
 export const regenerateRecoveryCodes = (password: string, code: string) => request<RecoveryCodeResponse>('/account/two-factor.php', { method: 'POST', body: JSON.stringify({ action: 'regenerate_codes', password, code }) })
 export const deactivateAccount = (password: string, confirmation: string) => request<{ success: true; message: string }>('/account/deactivate.php', { method: 'POST', body: JSON.stringify({ password, confirmation }) })
 export const resendVerificationEmail = () => request<{ success: true; message: string }>('/auth/resend-verification.php', { method: 'POST', body: '{}' })
+export const resendRegistrationVerificationCode = (email: string) => request<{ success: true; message: string }>('/auth/resend-verification.php', { method: 'POST', body: JSON.stringify({ email }) })
+export const verifyRegistrationEmailCode = (email: string, code: string) => request<{ success: true; message: string }>('/auth/verify-email.php', { method: 'POST', body: JSON.stringify({ email, code }) })
 export const requestPasswordReset = (email: string) => request<{ success: true; message: string }>('/auth/request-password-reset.php', { method: 'POST', body: JSON.stringify({ email }) })
 export const resetPassword = (token: string, newPassword: string, confirmPassword: string) => request<{ success: true; message: string }>('/auth/reset-password.php', { method: 'POST', body: JSON.stringify({ token, new_password: newPassword, confirm_password: confirmPassword }) })
 export const verifyEmail = (token: string) => request<{ success: true; message: string }>('/auth/verify-email.php', { method: 'POST', body: JSON.stringify({ token }) })

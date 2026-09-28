@@ -1,6 +1,14 @@
 import type { Translation } from './en'
 
 const ja: Translation = {
+  'auth.registrationOtpDescription': 'メールアドレスに送信された6桁のコードを入力してください。',
+  'auth.verificationCodeSentTo': '{{email}} に確認コードを送信しました。',
+  'auth.verificationCode': '6桁の確認コード',
+  'auth.verifyEmailCode': 'メールアドレスを確認',
+  'auth.resendCode': 'コードを再送信',
+  'auth.resendCooldown': '{{seconds}}秒後に再送信',
+  'auth.registrationVerified': 'メールアドレスを確認しました。続行するにはログインしてください。',
+  'auth.verificationCodeRequested': 'このアカウントで確認が必要な場合、新しいコードをまもなく送信します。',
   'nav.home': 'ホーム', 'nav.signIn': 'ログイン', 'nav.createAccount': 'アカウントを作成', 'nav.dashboard': 'ダッシュボード', 'nav.connectWallet': 'ウォレットを接続', 'nav.staking': 'ステーキング', 'nav.tokenomics': 'トークノミクス', 'nav.roadmap': 'ロードマップ', 'nav.transactions': '取引', 'nav.myNodes': 'マイノード', 'nav.profile': 'プロフィール', 'nav.settings': '設定', 'nav.logout': 'ログアウト', 'nav.workspace': 'ワークスペース', 'nav.admin': '管理ダッシュボード', 'nav.activity': '訪問者のアクティビティ',
   'common.loading': '読み込み中...', 'common.loadingSettings': '保存済みの設定を読み込み中...', 'common.loadingProfile': 'プロフィールを読み込み中...', 'common.saving': '保存中...', 'common.pleaseWait': 'お待ちください...', 'common.save': '保存', 'common.saveChanges': '変更を保存', 'common.cancel': 'キャンセル', 'common.close': '閉じる', 'common.continue': '続行', 'common.back': '戻る', 'common.backHome': 'ホームに戻る', 'common.retry': '再試行', 'common.copy': 'コピー', 'common.copied': 'コピーしました', 'common.edit': '編集', 'common.editProfile': 'プロフィールを編集', 'common.fullName': '氏名', 'common.emailAddress': 'メールアドレス', 'common.password': 'パスワード', 'common.currentPassword': '現在のパスワード', 'common.newPassword': '新しいパスワード', 'common.confirmPassword': 'パスワードを確認', 'common.unknown': '不明', 'common.notAvailable': '利用不可', 'common.notConnected': '未接続', 'common.enabled': '有効', 'common.disabled': '無効', 'common.on': 'オン', 'common.off': 'オフ', 'common.status': 'ステータス', 'common.amount': '金額', 'common.type': '種類', 'common.dateTime': '日時', 'common.page': 'ページ', 'common.network': 'ネットワーク', 'common.activity': 'アクティビティ', 'common.account': 'アカウント', 'common.member': 'メンバー', 'common.administrator': '管理者',
   'home.heroTitle': 'データを育てる。価値を育てる。共に成長する。', 'home.heroDescription': 'NodeConnect は、プライバシー、持続可能性、報酬を備えた Web3 の未来を支える分散型データインフラです。', 'home.whyTitle': 'NODECONNECT を選ぶ理由', 'home.secureTitle': '分散型で安全', 'home.secureDescription': '分散型インフラを基盤とし、エンドツーエンド暗号化とプライバシー保護を実現します。', 'home.sustainableTitle': '持続可能な設計', 'home.sustainableDescription': '環境に配慮したネットワークが、グリーンノードと持続的な成長を促進します。', 'home.utilityTitle': '現実世界での実用性', 'home.utilityDescription': '分散型データで dApp、AI、エンタープライズソリューションを支えます。', 'home.rewardsTitle': 'コミュニティ報酬', 'home.rewardsDescription': 'ステーキング、紹介、エコシステムの成長を通じてコミュニティに報酬を還元します。',

@@ -1,5 +1,13 @@
 import type { Translation } from './en'
 const zu: Translation = {
+  'auth.registrationOtpDescription': 'Faka ikhodi enamadijithi angu-6 ethunyelwe ekhelini lakho le-imeyili.',
+  'auth.verificationCodeSentTo': 'Sithumele ikhodi yokuqinisekisa ku-{{email}}.',
+  'auth.verificationCode': 'Ikhodi yokuqinisekisa enamadijithi angu-6',
+  'auth.verifyEmailCode': 'Qinisekisa i-imeyili',
+  'auth.resendCode': 'Thumela ikhodi futhi',
+  'auth.resendCooldown': 'Thumela futhi emizuzwaneni engu-{{seconds}}',
+  'auth.registrationVerified': 'I-imeyili yakho iqinisekisiwe. Ngena ngemvume ukuze uqhubeke.',
+  'auth.verificationCodeRequested': 'Uma le akhawunti idinga ukuqinisekiswa, ikhodi entsha izothunyelwa maduze.',
     'settings.enableTwoFactor': 'Vula ukuqinisekisa ngezinto ezimbili',
     'transactions.activityStake': 'Faka i-stake', 'transactions.activityClaim': 'Funa', 'transactions.activityVote': 'Vota',
     'transactions.epochComparison': '{{change}} uma kuqhathaniswa ne-epoch edlule', 'transactions.trailingComparison': '{{change}} ezinsukwini ezingu-30 ezidlule',

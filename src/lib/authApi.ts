@@ -9,7 +9,14 @@ export type AuthUser = {
   last_login_at: string | null
 }
 
-export type ApiResponse = { success: boolean; message?: string; user?: AuthUser; requires_2fa?: boolean; verification_email_sent?: boolean }
+export type ApiResponse = { success: boolean; message?: string; code?: string; user?: AuthUser; requires_2fa?: boolean; verification_required?: boolean; verification_email_sent?: boolean }
+
+export class AuthApiError extends Error {
+  constructor(message: string, readonly code?: string, readonly verificationEmailSent?: boolean) {
+    super(message)
+    this.name = 'AuthApiError'
+  }
+}
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1/nodeconnect/api').replace(/\/$/, '')
 
@@ -22,7 +29,7 @@ async function request(path: string, options: RequestInit = {}): Promise<ApiResp
     })
     const payload = await response.json() as ApiResponse
     if (!response.ok || !payload.success) {
-      throw new Error(payload.message || 'Something went wrong. Please try again.')
+      throw new AuthApiError(payload.message || 'Something went wrong. Please try again.', payload.code, payload.verification_email_sent)
     }
     return payload
   } catch (error) {

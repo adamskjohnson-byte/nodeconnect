@@ -39,13 +39,15 @@ The development environment can omit `NODECONNECT_RATE_LIMIT_KEY` and uses a det
 
 ## Resend
 
-`api/email_service.php` sends HTTPS requests to Resend's REST API using PHP cURL. API keys and response bodies are not logged or returned. It sends no-reply verification, password-reset, password-change, 2FA, and deactivation messages. Configure these variables on the Railway PHP API service, never on Railway MySQL or Vercel:
+`api/email_service.php` sends HTTPS requests to `https://api.resend.com/emails` using PHP cURL, TLS verification, a server-side bearer key, and a JSON request body. API keys, request payloads, response bodies, and full recipient addresses are never logged or returned. On delivery failure it logs a request ID, UTC timestamp, endpoint, recipient domain, HTTP status, cURL errno/error, and sanitized Resend error type/message. Configure these variables on the Railway PHP API service, never on Railway MySQL or Vercel:
 
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL`
 - `RESEND_FROM_NAME`
 
 After a password, 2FA, or deactivation update commits, an email failure is logged safely and does not undo the security operation. Password-reset request responses remain generic; if delivery fails, the user is not told that a message was successfully sent.
+
+On 2026-09-27, the local PHP process made a read-only Resend domains request using its server-side configured key: HTTP 200, and `canopynodeconnect.com` was returned as `verified`. A credential-free TLS request also reached the Resend endpoint (HTTP 401 as expected without authorization). These checks do not establish that any message was accepted for a recipient or delivered. Railway environment variables and an actual recipient inbox have not been verified in this task.
 
 ## Endpoints
 
@@ -55,8 +57,8 @@ After a password, 2FA, or deactivation update commits, an email failure is logge
 - `GET/POST /account/sessions.php`: list safe session data, revoke an owned session, or revoke other sessions. Raw session tokens/hashes are never returned. IP is masked in the response.
 - `GET/POST /account/two-factor.php`: status, start setup, confirm/enable, disable, and regenerate recovery codes.
 - `POST /account/deactivate.php`: reauthenticate and soft-deactivate the account; sets existing `users.status` to `disabled`, timestamps it, revokes sessions, preserves history, audits, and sends a notice.
-- `POST /auth/resend-verification.php`: send a single-use verification link to the signed-in account.
-- `POST /auth/verify-email.php`: consume a hashed, expiring verification token.
+- `POST /auth/resend-verification.php`: public email+OTP resend uses generic responses and persistent email/IP limits; the authenticated legacy path retains single-use verification-link behavior.
+- `POST /auth/verify-email.php`: consume either the existing hashed single-use link token or a registration OTP submitted in the request body.
 - `POST /auth/request-password-reset.php`: generic password-reset request response.
 - `POST /auth/reset-password.php`: consume the existing hashed password-reset token, set the new password, revoke sessions, audit, and notify.
 - `POST /auth/verify-2fa.php`: complete the short-lived login challenge using TOTP or a one-time recovery code.
@@ -65,7 +67,9 @@ All account mutation endpoints use the existing secure session and require an ex
 
 ## Security behavior and limitations
 
-- New registrations receive a hashed, 24-hour email-verification token. Verification is not required to log in, preserving existing accounts and the current login policy.
+- New registrations create an unverified account and a six-digit, 10-minute email OTP. The OTP is generated with PHP cryptographic randomness, stored as a keyed HMAC in the existing `email_verification_tokens.token_hash`, invalidates prior outstanding verification entries, and is single-use. The OTP is sent in the email body only, never in a URL, response, database plaintext, or log.
+- Registration does not create an `auth_sessions` row or session cookie. Password login checks `email_verified_at` before 2FA and returns `EMAIL_NOT_VERIFIED` without authenticating; the frontend offers the OTP screen and generic resend. Session lookup revokes existing session/challenge rows for unverified accounts, and successful link/OTP verification clears prior session/challenge rows so the user must sign in again.
+- OTP verification is limited to five attempts per account per 15 minutes and 20 attempts per IP per 15 minutes. Sending is limited to one per email per minute, five per email per hour, and ten per IP per hour. Public resend responses do not reveal whether an email is registered or already verified. After verification, the user must sign in with their password; if 2FA is enabled, the existing TOTP challenge follows.
 - Passwords use `password_hash()` and `password_verify()`. New/changed passwords require 12–128 characters with at least one letter and number. Passwords are not logged or emailed.
 - Password reset tokens are stored as hashes, expire after one hour, are single use, invalidate earlier outstanding reset tokens, and revoke existing sessions.
 - TOTP uses the maintained `pragmarx/google2fa` Composer package. Setup requires the current password and a valid TOTP before enabling. The seed is encrypted at rest using OpenSSL AES-256-GCM and a server-only key. Codes are checked with replay prevention.
@@ -74,7 +78,7 @@ All account mutation endpoints use the existing secure session and require an ex
 - Login with 2FA enabled creates only a five-minute challenge cookie/database record before second-factor completion. Full auth session is established only after a valid code.
 - Session rows store user-agent/device/browser/OS and IP server-side; the UI receives a masked IP and no cookie token or token hash.
 - Account deactivation is soft: it disables sign-in and revokes sessions without deleting retained account/history data. Reactivation requires an administrator/support process; no self-service reactivation endpoint is provided.
-- Preferences persist dark/light/system, sound toggle/volume, notification flags, language `en`, and currency `USD`. No sound playback is currently implemented; no sound is invented. Staking/reward/referral notification toggles are stored preferences only; corresponding event-delivery systems are not currently implemented. The app is not translated beyond English and financial values are not converted beyond USD.
+- Preferences persist dark/light/system, sound toggle/volume, notification flags, language, and currency `USD`. One document-level delegated click listener plays the existing Web Audio click cue for actionable controls; explicit success/toggle/copy cues continue through the same engine. Sound respects cached/server preference and volume, and does not run for rendering, pointer movement, or scrolling. Staking/reward/referral notification toggles are stored preferences only; corresponding event-delivery systems are not currently implemented. Financial values are not converted beyond USD.
 - Cookie-authenticated writes require the exact allowlisted browser Origin, in addition to HttpOnly/Secure/SameSite cookie behavior. No wildcard credentialed CORS is used.
 - API responses include `Cache-Control: no-store`, `X-Content-Type-Options`, and `Referrer-Policy`; CSP is not emitted by this JSON API.
 
@@ -83,14 +87,16 @@ All account mutation endpoints use the existing secure session and require an ex
 1. Import migration 002 once into local `nodeconnect`.
 2. Configure local `api/.env` with the keys above and a valid Resend API key/sender if testing email.
 3. Start XAMPP Apache/MySQL and Vite (`npm run dev`).
-4. Sign in, open `#profile`, edit the name, refresh, and verify persistence/read-only email/status.
-5. Open `#settings`; test dark/light/system, sound, volume, notifications, language, and currency, then refresh and sign in again.
-6. Change password with valid/invalid current password and confirmation cases; check that only other sessions are revoked.
-7. Open Manage Sessions, revoke another session, and verify its cookie no longer authenticates.
-8. Enable 2FA, scan the locally rendered QR, verify a code, store recovery codes safely, sign out and test TOTP/recovery login, then test replayed and used codes.
-9. Test verification and password-reset links for valid, expired, and used tokens. Check Resend delivery only after a real API key is configured.
-10. Test account deactivation using password plus exact `DEACTIVATE` confirmation; confirm sessions are invalidated and account/history rows are retained.
-11. Recheck normal/admin routing, visitor activity API, Telegram notifications, and each existing wallet provider flow.
+4. Register a new account and verify it remains unauthenticated; use the emailed OTP, then sign in with the password and complete 2FA if enabled.
+5. Try login before verification, invalid/expired/reused OTPs, five failed attempts, and resend cooldown/rate limits with a dedicated test mailbox.
+6. Sign in, open `#profile`, edit the name, refresh, and verify persistence/read-only email/status.
+7. Open `#settings`; test dark/light/system, sound ON/OFF, volume, notifications, language, and currency, then refresh and sign in again.
+8. Change password with valid/invalid current password and confirmation cases; check that only other sessions are revoked.
+9. Open Manage Sessions, revoke another session, and verify its cookie no longer authenticates.
+10. Enable 2FA, scan the locally rendered QR, verify a code, store recovery codes safely, sign out and test TOTP/recovery login, then test replayed and used codes.
+11. Test email-change confirmation and password-reset links for valid, expired, and used tokens. Check Resend delivery only after a real test email is received.
+12. Test account deactivation using password plus exact `DEACTIVATE` confirmation; confirm sessions are invalidated and account/history rows are retained.
+13. Recheck normal/admin routing, visitor activity API, Telegram notifications, and each existing wallet provider flow.
 
 ## Manual acceptance checklist
 
@@ -104,7 +110,7 @@ Profile:
 Preferences:
 
 - [ ] Select Dark, Light, and System; verify appearance immediately and after refresh/login.
-- [ ] Toggle Sound Effects and change volume; values persist. No sound is played unless an existing feature emits one.
+- [ ] Toggle Sound Effects and change volume; delegated controls produce one click cue when enabled, none when disabled, and persisted volume changes gain.
 - [ ] Toggle Activity, Staking, Rewards, and Referrals preferences; values persist.
 - [ ] Verify English and USD persist. Other translations/currency conversion are not claimed.
 
@@ -117,7 +123,8 @@ Security:
 - [ ] Verify a TOTP cannot be replayed in the same time window; verify recovery codes work once and fail on reuse.
 - [ ] Disable TOTP with password and current TOTP; verify notification email.
 - [ ] Request password reset for existing and nonexistent email and confirm the API response remains generic; test valid, expired, and consumed tokens.
-- [ ] Verify email with valid, expired, and consumed links. Existing and unverified users can still sign in by design.
+- [ ] Register a new account; verify no session is created, valid OTP works once, and expiry, reuse, invalid attempts, resend cooldown, and login-before-verification are enforced.
+- [ ] Verify legacy email links with valid, expired, and consumed tokens. Unverified users cannot access authenticated routes or complete stale 2FA challenges.
 - [ ] Deactivate with password and exact `DEACTIVATE` confirmation; verify sessions are revoked and database history is retained.
 
 Integration regression:
@@ -132,7 +139,7 @@ Database-backed API scenarios require migration 002 first. No database migration
 
 ## Profile, email, referral, sound, and language additions
 
-Apply `database/migrations/003_profile_email_referral.sql` manually to the existing `nodeconnect` database after confirming migration 002 is present. The migration is additive and uses `CREATE TABLE IF NOT EXISTS`; it does not edit or rerun migration 002, alter existing user rows, or touch visitor/admin tables. This implementation did not apply the migration locally or in production. Profile and email endpoints that depend on its tables will return a safe server error until it has been applied.
+Migration 003 is already present in the local database and was not rerun or modified in this task. It is additive and uses `CREATE TABLE IF NOT EXISTS`; it does not edit migration 002, alter existing user rows, or touch visitor/admin tables. Confirm the same schema is deployed before using the existing Profile/email endpoints in another environment.
 
 Profile pictures are limited to 2 MiB and JPEG, PNG, or WebP. PHP checks file upload status, `finfo` MIME, decoded image MIME, and dimensions (maximum 2048 by 2048 / 4,194,304 pixels); browser filename and extension are ignored. The image bytes and metadata are stored in the user's `user_profile_images` row, not in the Railway container filesystem. This keeps the image on the existing persistent MySQL service and avoids adding an unconfigured object-storage provider. The API only serves the image to the authenticated owner; no server filesystem path or original filename is exposed. Current PHP runtimes do not include GD, so images are bounded and dimension-checked but are not recompressed/resized. Database growth should be monitored if profile uploads become high-volume.
 
@@ -140,11 +147,13 @@ Profile pictures are limited to 2 MiB and JPEG, PNG, or WebP. PHP checks file up
 
 Referral IDs live in `user_referrals`, use a random `NC-` plus 80-bit hexadecimal identifier with a unique database key, and are generated by PHP. New registrations get one in their registration transaction; existing accounts receive one on their first profile read. The current product has no implemented referral-link attribution or rewards engine, so the ID is displayed/copied but does not create referral accounting.
 
-`src/lib/soundService.ts` synthesizes short sine-wave toggle, success, and copy cues only when an explicit action calls it. It reads the existing cached preferences and is updated from authenticated server preferences and Settings changes. Volume scales Web Audio gain; disabled sound and zero volume return without creating audio. Audio is never started on load, and browser-policy failures are swallowed as optional feedback. The embedded browser could not reliably deliver the Settings toggle interaction during validation, so audible playback and OFF/ON gain behavior still need a manual real-browser check.
+`src/lib/soundService.ts` is the single Web Audio engine for click, toggle, success, and copy cues. `installGlobalSoundInteractions()` installs one delegated click listener before React mounts, so dynamic controls are covered. Explicit sounds mark the same click event to prevent duplication; the referral copy and volume controls are marked as managed because they already use dedicated cues. It reads local cached preferences, receives authenticated server preferences and Settings changes, scales gain with volume, and does not start audio until an interaction. Browser playback can still be blocked by user-agent policy; the app swallows such optional audio failures.
+
+Registration email verification uses the existing migration 002 `email_verification_tokens` and `security_rate_limits` tables; no migration was added and migrations 002/003 were not changed. The OTP hash is HMAC-SHA-256 keyed by the existing server-only `NODECONNECT_RATE_LIMIT_KEY`; production continues to fail closed if that key is absent. Resend uses the verified sender configuration on the PHP host only. Email change remains a separate password-confirmed 30-minute hashed-link flow in `email_change_requests`; 2FA remains TOTP-based with its existing encrypted secret and one-use recovery codes. 2FA security-notification sends are best-effort after the TOTP action and do not use registration OTP.
 
 TOTP enrollment/login/recovery already existed in the PHP backend and uses the existing AES-256-GCM encrypted seed, newer-timestamp replay check, five-minute login challenge, attempt limits, and one-use hashed recovery codes. The Settings UI now presents enrollment, QR/manual setup, disable confirmation, and recovery-code reveal in native modal dialogs. The backend flow was reused, not replaced. Database-backed enrollment, actual authenticator scans, Resend notifications, and recovery login were not exercised in this validation pass.
 
-The centralized `src/lib/i18n.ts` uses i18next/react-i18next and lists English plus French, Spanish, Portuguese, German, Italian, Dutch, Russian, Ukrainian, Polish, Turkish, Arabic, Simplified Chinese, Traditional Chinese, Japanese, Korean, Hindi, Indonesian, Vietnamese, Thai, Bengali, Romanian, Greek, Slovak, and Zulu. Existing account preferences persist the selected code locally and through `/settings/preferences.php`; the server accepts only these locale codes. Arabic sets document direction to RTL and has shell/sidebar/profile/form/modal direction rules. The settings headings/theme/sound/security controls, shared navigation, and core Auth/Profile controls have curated translations. **This is not yet full-site localization:** large portions of Home, Dashboard, admin, wallet, and other page copy and many backend-generated errors remain English. The English fallback is used in production for such missing strings; development marks missing keys only when a component uses the translation hook. Do not represent every application page as fully translated until those catalogs and call sites are completed and reviewed by native speakers.
+The centralized `src/lib/i18n.ts` uses i18next/react-i18next with 25 locales. On 2026-09-27, all 548 keys were present in every locale with no extra keys or placeholder mismatches (`node scripts/check-i18n.mjs`). The eight registration-OTP strings were added across all locales. Arabic retains its RTL document direction and layout rules. Catalog parity does not replace native-speaker review of translation quality.
 
 ## Validation performed for these additions
 
@@ -152,6 +161,6 @@ The centralized `src/lib/i18n.ts` uses i18next/react-i18next and lists English p
 - `php -l` passed for the added account/email endpoints, shared account support, registration, and preferences endpoint.
 - Composer validation and `composer audit` passed with no advisories; npm install reported zero vulnerabilities.
 - Browser locale checks passed for Spanish, Arabic, Simplified Chinese, Japanese, and Korean document language; Arabic remained RTL after refresh, and the local preference was restored to English.
-- Local unauthenticated GETs for `/account/profile-picture.php` and `/account/email-change.php` returned HTTP 401 JSON. Authenticated Profile/email requests returned HTTP 500 because migration 003 had deliberately not been applied. No claim of successful database-backed profile/email/referral behavior is made until the migration is applied and those flows are exercised.
+- An earlier validation pass, before migration 003 was applied locally, saw HTTP 500 on authenticated Profile/email reads. Current read-only local schema metadata confirms the migration 003 tables now exist; this task did not exercise profile upload/email changes against them. Production migration state was not inspected.
 - Production GETs at `https://api.canopynodeconnect.com` (without `/api`) returned HTTP 401 JSON for existing `/account/profile.php`, `/account/two-factor.php`, `/account/sessions.php`, and `/settings/preferences.php`. The new `/account/profile-picture.php` and `/account/email-change.php` paths returned Apache 404 because the new code has not been deployed. No production data was mutated and no email was sent.
-- Changed PHP files passed `php -l`; all-workspace PHP lint, full upload/email/TOTP integration tests, and manual audio playback remain outstanding.
+- Changed PHP files passed `php -l`; all-workspace PHP lint, full upload/email/TOTP integration tests, actual recipient inbox confirmation, Railway environment inspection, and physical speaker/headphone testing remain outstanding. Local Resend credential/domain and HTTPS transport checks are described above; they did not send mail.

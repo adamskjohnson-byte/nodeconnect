@@ -49,23 +49,15 @@ try {
     ]);
     $userId = (int) $pdo->lastInsertId();
     ensureReferralId($pdo, $userId);
-    establishSession($pdo, $userId);
-    $verificationToken = createSingleUseToken($pdo, 'email_verification_tokens', $userId, 86400);
     $userQuery = $pdo->prepare('SELECT id, full_name, email, status, role, email_verified_at, created_at, last_login_at FROM users WHERE id = :id');
     $userQuery->execute([':id' => $userId]);
     $user = $userQuery->fetch();
     $pdo->commit();
 
-    $verificationUrl = frontendUrl('#auth?mode=verify-email&token=' . rawurlencode($verificationToken));
-    $emailSent = actionEmail($email, $fullName, 'Verify your NodeConnect email', 'Confirm your email address using the link below. This link expires in 24 hours. Email verification does not block sign-in.', $verificationUrl, 'Verify email');
-    unset($verificationToken, $verificationUrl, $password, $confirmPassword);
-    if ($emailSent) {
-        accountAudit($pdo, $userId, 'email_verification_sent');
-    } else {
-        error_log('NodeConnect registration verification email delivery failed.');
-    }
+    $emailSent = issueEmailVerificationOtp($pdo, $user);
+    unset($password, $confirmPassword, $user);
 
-    respond(['success' => true, 'message' => $emailSent ? 'Account created. Check your email to verify your address.' : 'Account created, but the verification email could not be sent. You can request another from Settings.', 'verification_email_sent' => $emailSent, 'user' => safeUser($user)], 201);
+    respond(['success' => true, 'message' => 'Account created. Email verification is required before sign-in.', 'verification_required' => true, 'verification_email_sent' => $emailSent], 201);
 } catch (Throwable $error) {
     if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) {
         $pdo->rollBack();

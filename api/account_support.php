@@ -21,6 +21,7 @@ function accountAudit(PDO $pdo, ?int $userId, string $eventType, array $metadata
         'session_revoked', 'sessions_revoked', 'account_deactivation_requested', 'account_deactivated',
         'profile_picture_changed', 'profile_picture_removed', 'referral_id_issued',
         'email_change_requested', 'email_change_request_failed', 'email_change_confirmed',
+        'email_verification_delivery_failed', 'email_verification_code_failed',
     ];
     if (!in_array($eventType, $allowedEvents, true)) {
         throw new InvalidArgumentException('Unsupported security event.');
@@ -70,7 +71,7 @@ function ensureReferralId(PDO $pdo, int $userId): string
     throw new RuntimeException('Unable to allocate a unique referral identifier.');
 }
 
-function rateLimitAllowed(PDO $pdo, string $action, string $scope, int $maximum, int $windowSeconds, int $blockSeconds = 900): bool
+function accountRateLimitKey(): string
 {
     $scopeKey = envValue('NODECONNECT_RATE_LIMIT_KEY');
     if (strlen($scopeKey) < 32) {
@@ -79,6 +80,12 @@ function rateLimitAllowed(PDO $pdo, string $action, string $scope, int $maximum,
         }
         $scopeKey = hash('sha256', 'NodeConnect local rate-limit scope|' . envValue('NODECONNECT_DB_NAME', 'nodeconnect'), true);
     }
+    return $scopeKey;
+}
+
+function rateLimitAllowed(PDO $pdo, string $action, string $scope, int $maximum, int $windowSeconds, int $blockSeconds = 900): bool
+{
+    $scopeKey = accountRateLimitKey();
     $scopeHash = hash_hmac('sha256', $action . "\0" . $scope, $scopeKey);
     $windowSeconds = max(1, min(86400, $windowSeconds));
     $blockSeconds = max(1, min(86400, $blockSeconds));
@@ -171,6 +178,26 @@ function createSingleUseToken(PDO $pdo, string $table, int $userId, int $lifetim
     return $token;
 }
 
+function createEmailVerificationOtp(PDO $pdo, int $userId): array
+{
+    $pdo->prepare('UPDATE email_verification_tokens SET used_at = CURRENT_TIMESTAMP WHERE user_id = :user_id AND used_at IS NULL')->execute([':user_id' => $userId]);
+    $statement = $pdo->prepare(
+        'INSERT INTO email_verification_tokens (user_id, token_hash, expires_at)
+         VALUES (:user_id, :token_hash, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 10 MINUTE))'
+    );
+    for ($attempt = 0; $attempt < 5; $attempt++) {
+        $code = sprintf('%06d', random_int(0, 999999));
+        $codeHash = hash_hmac('sha256', 'email-verification-otp:v1:' . $userId . ':' . $code, accountRateLimitKey());
+        try {
+            $statement->execute([':user_id' => $userId, ':token_hash' => $codeHash]);
+            return ['code' => $code, 'hash' => $codeHash];
+        } catch (PDOException $error) {
+            if ((int) ($error->errorInfo[1] ?? 0) !== 1062) throw $error;
+        }
+    }
+    throw new RuntimeException('Unable to allocate a unique email verification code.');
+}
+
 function createRecoveryCodes(PDO $pdo, int $userId): array
 {
     $pdo->prepare('DELETE FROM user_recovery_codes WHERE user_id = :user_id')->execute([':user_id' => $userId]);
@@ -225,4 +252,52 @@ function actionEmail(string $to, string $name, string $subject, string $message,
     $escapedSubject = htmlspecialchars($subject, ENT_QUOTES, 'UTF-8');
     $html = '<div style="margin:0;background:#050807;padding:32px;font-family:Arial,sans-serif;color:#e8f1ed"><div style="max-width:560px;margin:auto;border:1px solid #174b35;border-radius:10px;background:#0b1210;padding:28px"><p style="color:#00ff88;font-size:12px;font-weight:bold;letter-spacing:2px">NODECONNECT</p><h1 style="font-size:22px">' . $escapedSubject . '</h1><p style="color:#bac7c0;line-height:1.6">Hello ' . $escapedName . ',</p><p style="color:#bac7c0;line-height:1.6">' . $escapedMessage . '</p><p><a href="' . $escapedUrl . '" style="display:inline-block;padding:12px 18px;background:#00ff88;color:#001c12;text-decoration:none;border-radius:6px;font-weight:bold">' . $escapedButton . '</a></p><p style="color:#7d8983;font-size:12px">If you did not request this, you can ignore this message.</p></div></div>';
     return sendResendEmail($to, $subject, $html);
+}
+
+function verificationCodeEmail(string $to, string $name, string $code): bool
+{
+    $escapedName = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+    $escapedCode = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
+    $subject = 'Your NodeConnect verification code';
+    $html = '<div style="margin:0;background:#050807;padding:32px;font-family:Arial,sans-serif;color:#e8f1ed"><div style="max-width:560px;margin:auto;border:1px solid #174b35;border-radius:10px;background:#0b1210;padding:28px"><p style="color:#00ff88;font-size:12px;font-weight:bold;letter-spacing:2px">NODECONNECT</p><h1 style="font-size:22px">Verify your email</h1><p style="color:#bac7c0;line-height:1.6">Hello ' . $escapedName . ', enter this six-digit code to verify your email address:</p><p style="padding:16px;text-align:center;background:#07100c;color:#00ff88;font-size:30px;font-weight:bold;letter-spacing:8px">' . $escapedCode . '</p><p style="color:#7d8983;font-size:12px">This code expires in 10 minutes and can only be used once. If you did not create this account, you can ignore this message.</p></div></div>';
+    return sendResendEmail($to, $subject, $html);
+}
+
+function issueEmailVerificationOtp(PDO $pdo, array $user, bool $applyRateLimits = true): bool
+{
+    $userId = (int) $user['id'];
+    if ($applyRateLimits) {
+        $email = strtolower(trim((string) $user['email']));
+        $ip = activityClientIp() ?? 'unknown';
+        if (!rateLimitAllowed($pdo, 'verification_otp_send_email', $email, 1, 60, 60)
+            || !rateLimitAllowed($pdo, 'verification_otp_email_hourly', $email, 5, 3600)
+            || !rateLimitAllowed($pdo, 'verification_otp_send_ip', $ip, 10, 3600)) {
+            return false;
+        }
+    }
+
+    if ($pdo->inTransaction()) {
+        $otp = createEmailVerificationOtp($pdo, $userId);
+    } else {
+        $pdo->beginTransaction();
+        try {
+            $otp = createEmailVerificationOtp($pdo, $userId);
+            $pdo->commit();
+        } catch (Throwable $error) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            throw $error;
+        }
+    }
+
+    $sent = verificationCodeEmail((string) $user['email'], (string) $user['full_name'], $otp['code']);
+    unset($otp['code']);
+    if ($sent) {
+        accountAudit($pdo, $userId, 'email_verification_sent', ['method' => 'otp']);
+        return true;
+    }
+
+    $pdo->prepare('UPDATE email_verification_tokens SET used_at = CURRENT_TIMESTAMP WHERE user_id = :user_id AND token_hash = :token_hash AND used_at IS NULL')
+        ->execute([':user_id' => $userId, ':token_hash' => $otp['hash']]);
+    accountAudit($pdo, $userId, 'email_verification_delivery_failed', ['method' => 'otp']);
+    return false;
 }

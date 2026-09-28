@@ -1,5 +1,13 @@
 import type { Translation } from './en'
 const vi: Translation = {
+  'auth.registrationOtpDescription': 'Nhập mã gồm 6 chữ số đã được gửi đến địa chỉ email của bạn.',
+  'auth.verificationCodeSentTo': 'Chúng tôi đã gửi mã xác minh đến {{email}}.',
+  'auth.verificationCode': 'Mã xác minh gồm 6 chữ số',
+  'auth.verifyEmailCode': 'Xác minh email',
+  'auth.resendCode': 'Gửi lại mã',
+  'auth.resendCooldown': 'Gửi lại sau {{seconds}} giây',
+  'auth.registrationVerified': 'Email của bạn đã được xác minh. Hãy đăng nhập để tiếp tục.',
+  'auth.verificationCodeRequested': 'Nếu tài khoản này cần xác minh, mã mới sẽ được gửi trong giây lát.',
     'settings.enableTwoFactor': 'Bật xác thực hai yếu tố',
     'transactions.activityStake': 'Stake', 'transactions.activityClaim': 'Nhận', 'transactions.activityVote': 'Bỏ phiếu',
     'transactions.epochComparison': '{{change}} so với epoch trước', 'transactions.trailingComparison': '{{change}} trong 30 ngày gần nhất',

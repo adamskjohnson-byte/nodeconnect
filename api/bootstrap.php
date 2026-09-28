@@ -218,6 +218,13 @@ function currentUser(PDO $pdo): ?array
     if (!$user || $user['status'] !== 'active') {
         return null;
     }
+    if (empty($user['email_verified_at'])) {
+        $revoke = $pdo->prepare('DELETE FROM auth_sessions WHERE user_id = :user_id');
+        $revoke->execute([':user_id' => $user['id']]);
+        $pdo->prepare('DELETE FROM auth_login_challenges WHERE user_id = :user_id')->execute([':user_id' => $user['id']]);
+        setcookie(AUTH_COOKIE, '', sessionCookieOptions(time() - 3600));
+        return null;
+    }
 
     $touch = $pdo->prepare('UPDATE auth_sessions SET last_activity_at = CURRENT_TIMESTAMP WHERE id = :session_id');
     $touch->execute([':session_id' => $user['session_id']]);
