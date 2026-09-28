@@ -1,6 +1,11 @@
 import type { Translation } from './en'
 
 const ja: Translation = {
+  'notifications.title': '通知', 'notifications.markAllRead': 'すべて既読にする', 'notifications.empty': '新しい通知はありません', 'profile.accountMenu': '{{name}}のアカウントメニュー',
+  'notifications.emailVerifiedTitle': 'メールアドレスを確認しました', 'notifications.emailVerifiedMessage': 'メールアドレスの確認が完了しました。',
+  'notifications.passwordTitle': 'パスワードを更新しました', 'notifications.passwordMessage': 'アカウントのパスワードが変更またはリセットされました。',
+  'notifications.twoFactorTitle': '二要素認証の設定を更新しました', 'notifications.twoFactorMessage': '二要素認証の設定が変更されました。',
+  'notifications.emailChangedTitle': 'メールアドレスを変更しました', 'notifications.emailChangedMessage': 'アカウントのメールアドレスが変更されました。',
   'auth.registrationOtpDescription': 'メールアドレスに送信された6桁のコードを入力してください。',
   'auth.verificationCodeSentTo': '{{email}} に確認コードを送信しました。',
   'auth.verificationCode': '6桁の確認コード',

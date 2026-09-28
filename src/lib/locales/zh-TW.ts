@@ -1,6 +1,11 @@
 import type { Translation } from './en'
 
 const zhTW: Translation = {
+  'notifications.title': '通知', 'notifications.markAllRead': '全部標示為已讀', 'notifications.empty': '沒有新通知', 'profile.accountMenu': '{{name}}的帳戶選單',
+  'notifications.emailVerifiedTitle': '電子郵件已驗證', 'notifications.emailVerifiedMessage': '您的電子郵件地址已成功驗證。',
+  'notifications.passwordTitle': '密碼已更新', 'notifications.passwordMessage': '您的帳戶密碼已變更或重設。',
+  'notifications.twoFactorTitle': '雙重驗證安全設定已更新', 'notifications.twoFactorMessage': '雙重驗證設定已變更。',
+  'notifications.emailChangedTitle': '電子郵件地址已變更', 'notifications.emailChangedMessage': '您的帳戶電子郵件地址已成功變更。',
   'auth.registrationOtpDescription': '請輸入寄至您電子郵件地址的 6 位數驗證碼。',
   'auth.verificationCodeSentTo': '我們已將驗證碼寄至 {{email}}。',
   'auth.verificationCode': '6 位數驗證碼',

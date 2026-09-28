@@ -1,6 +1,11 @@
 import type { Translation } from './en'
 
 const nl: Translation = {
+  'notifications.title': 'Meldingen', 'notifications.markAllRead': 'Alles als gelezen markeren', 'notifications.empty': 'Geen nieuwe meldingen', 'profile.accountMenu': 'Accountmenu van {{name}}',
+  'notifications.emailVerifiedTitle': 'E-mail bevestigd', 'notifications.emailVerifiedMessage': 'Je e-mailadres is bevestigd.',
+  'notifications.passwordTitle': 'Wachtwoord bijgewerkt', 'notifications.passwordMessage': 'Het wachtwoord van je account is gewijzigd of opnieuw ingesteld.',
+  'notifications.twoFactorTitle': 'Tweestapsbeveiliging bijgewerkt', 'notifications.twoFactorMessage': 'De instellingen voor tweestapsverificatie zijn gewijzigd.',
+  'notifications.emailChangedTitle': 'E-mailadres gewijzigd', 'notifications.emailChangedMessage': 'Het e-mailadres van je account is gewijzigd.',
   'auth.registrationOtpDescription': 'Voer de 6-cijferige code in die naar je e-mailadres is gestuurd.',
   'auth.verificationCodeSentTo': 'We hebben een verificatiecode gestuurd naar {{email}}.',
   'auth.verificationCode': 'Verificatiecode van 6 cijfers',

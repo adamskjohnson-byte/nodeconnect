@@ -1,5 +1,10 @@
 import type { Translation } from './en'
 const ar: Translation = {
+  'notifications.title': 'الإشعارات', 'notifications.markAllRead': 'وضع علامة مقروء على الكل', 'notifications.empty': 'لا توجد إشعارات جديدة', 'profile.accountMenu': 'قائمة حساب {{name}}',
+  'notifications.emailVerifiedTitle': 'تم التحقق من البريد الإلكتروني', 'notifications.emailVerifiedMessage': 'تم التحقق من عنوان بريدك الإلكتروني بنجاح.',
+  'notifications.passwordTitle': 'تم تحديث كلمة المرور', 'notifications.passwordMessage': 'تم تغيير كلمة مرور حسابك أو إعادة تعيينها.',
+  'notifications.twoFactorTitle': 'تم تحديث أمان المصادقة الثنائية', 'notifications.twoFactorMessage': 'تم تغيير إعدادات المصادقة الثنائية.',
+  'notifications.emailChangedTitle': 'تم تغيير عنوان البريد الإلكتروني', 'notifications.emailChangedMessage': 'تم تغيير البريد الإلكتروني لحسابك بنجاح.',
   'auth.registrationOtpDescription': 'أدخل الرمز المكوّن من 6 أرقام الذي أرسلناه إلى بريدك الإلكتروني.',
   'auth.verificationCodeSentTo': 'أرسلنا رمز تحقق إلى {{email}}.',
   'auth.verificationCode': 'رمز تحقق من 6 أرقام',

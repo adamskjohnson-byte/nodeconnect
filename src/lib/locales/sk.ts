@@ -1,5 +1,10 @@
 import type { Translation } from './en'
 const sk: Translation = {
+  'notifications.title': 'Upozornenia', 'notifications.markAllRead': 'Označiť všetko ako prečítané', 'notifications.empty': 'Žiadne nové upozornenia', 'profile.accountMenu': 'Ponuka účtu {{name}}',
+  'notifications.emailVerifiedTitle': 'E-mail bol overený', 'notifications.emailVerifiedMessage': 'Vaša e-mailová adresa bola úspešne overená.',
+  'notifications.passwordTitle': 'Heslo bolo aktualizované', 'notifications.passwordMessage': 'Heslo účtu bolo zmenené alebo obnovené.',
+  'notifications.twoFactorTitle': 'Dvojfaktorové zabezpečenie bolo aktualizované', 'notifications.twoFactorMessage': 'Nastavenia dvojfaktorového overenia boli zmenené.',
+  'notifications.emailChangedTitle': 'E-mailová adresa bola zmenená', 'notifications.emailChangedMessage': 'E-mailová adresa účtu bola úspešne zmenená.',
   'auth.registrationOtpDescription': 'Zadajte 6-miestny kód odoslaný na vašu e-mailovú adresu.',
   'auth.verificationCodeSentTo': 'Overovací kód sme poslali na adresu {{email}}.',
   'auth.verificationCode': '6-miestny overovací kód',

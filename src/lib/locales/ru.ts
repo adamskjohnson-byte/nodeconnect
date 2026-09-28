@@ -1,6 +1,11 @@
 import type { Translation } from './en'
 
 const ru: Translation = {
+  'notifications.title': 'Уведомления', 'notifications.markAllRead': 'Отметить все как прочитанные', 'notifications.empty': 'Нет новых уведомлений', 'profile.accountMenu': 'Меню аккаунта: {{name}}',
+  'notifications.emailVerifiedTitle': 'Электронная почта подтверждена', 'notifications.emailVerifiedMessage': 'Адрес электронной почты подтверждён.',
+  'notifications.passwordTitle': 'Пароль обновлён', 'notifications.passwordMessage': 'Пароль аккаунта был изменён или сброшен.',
+  'notifications.twoFactorTitle': 'Настройки двухфакторной защиты изменены', 'notifications.twoFactorMessage': 'Настройки двухфакторной аутентификации были изменены.',
+  'notifications.emailChangedTitle': 'Адрес электронной почты изменён', 'notifications.emailChangedMessage': 'Адрес электронной почты аккаунта был изменён.',
   'auth.registrationOtpDescription': 'Введите 6-значный код, отправленный на ваш адрес электронной почты.',
   'auth.verificationCodeSentTo': 'Код подтверждения отправлен на адрес {{email}}.',
   'auth.verificationCode': '6-значный код подтверждения',

@@ -48,6 +48,8 @@ export type ActiveSession = {
 export type RecoveryCodeResponse = { success: true; recovery_codes: string[]; message?: string }
 export type TwoFactorSetup = { success: true; secret: string; provisioning_uri: string }
 export type AccountProfile = AuthUser & { referral_id: string; profile_image_version: string | null }
+export type AccountNotification = { id: number; type: string; title: string; message: string; read_at: string | null; created_at: string }
+export type AccountNotifications = { notifications: AccountNotification[]; unread_count: number }
 
 export const getProfile = async () => (await request<{ success: true; user: AccountProfile }>('/account/profile.php')).user
 export const updateProfile = async (fullName: string) => (await request<{ success: true; user: AccountProfile }>('/account/profile.php', { method: 'POST', body: JSON.stringify({ full_name: fullName }) })).user
@@ -63,6 +65,9 @@ export const requestEmailChange = (newEmail: string, password: string) => reques
 export const confirmEmailChange = (token: string) => request<{ success: true; message: string }>('/auth/confirm-email-change.php', { method: 'POST', body: JSON.stringify({ token }) })
 export const getPreferences = async () => (await request<{ success: true; preferences: UserPreferences }>('/settings/preferences.php')).preferences
 export const updatePreferences = async (preferences: Partial<UserPreferences>) => (await request<{ success: true; preferences: UserPreferences }>('/settings/preferences.php', { method: 'POST', body: JSON.stringify(preferences) })).preferences
+export const getNotifications = async () => request<{ success: true } & AccountNotifications>('/account/notifications.php')
+export const markNotificationRead = (id: number) => request<{ success: true; updated: number }>('/account/notifications.php', { method: 'POST', body: JSON.stringify({ action: 'mark_read', id }) })
+export const markAllNotificationsRead = () => request<{ success: true; updated: number }>('/account/notifications.php', { method: 'POST', body: JSON.stringify({ action: 'mark_all_read' }) })
 export const changePassword = (data: { current_password: string; new_password: string; confirm_password: string }) => request<{ success: true; message: string }>('/account/password.php', { method: 'POST', body: JSON.stringify(data) })
 export const getSessions = async () => (await request<{ success: true; sessions: ActiveSession[] }>('/account/sessions.php')).sessions
 export const revokeSession = (sessionId: number) => request<{ success: true; message: string }>('/account/sessions.php', { method: 'POST', body: JSON.stringify({ action: 'revoke', session_id: sessionId }) })

@@ -1,5 +1,10 @@
 import type { Translation } from './en'
 const th: Translation = {
+  'notifications.title': 'การแจ้งเตือน', 'notifications.markAllRead': 'ทำเครื่องหมายว่าอ่านทั้งหมดแล้ว', 'notifications.empty': 'ไม่มีการแจ้งเตือนใหม่', 'profile.accountMenu': 'เมนูบัญชี {{name}}',
+  'notifications.emailVerifiedTitle': 'ยืนยันอีเมลแล้ว', 'notifications.emailVerifiedMessage': 'ยืนยันที่อยู่อีเมลของคุณเรียบร้อยแล้ว',
+  'notifications.passwordTitle': 'อัปเดตรหัสผ่านแล้ว', 'notifications.passwordMessage': 'รหัสผ่านบัญชีของคุณถูกเปลี่ยนหรือรีเซ็ตแล้ว',
+  'notifications.twoFactorTitle': 'อัปเดตความปลอดภัยสองขั้นตอนแล้ว', 'notifications.twoFactorMessage': 'เปลี่ยนการตั้งค่าการยืนยันตัวตนสองขั้นตอนแล้ว',
+  'notifications.emailChangedTitle': 'เปลี่ยนที่อยู่อีเมลแล้ว', 'notifications.emailChangedMessage': 'เปลี่ยนที่อยู่อีเมลของบัญชีเรียบร้อยแล้ว',
   'auth.registrationOtpDescription': 'ป้อนรหัส 6 หลักที่ส่งไปยังที่อยู่อีเมลของคุณ',
   'auth.verificationCodeSentTo': 'เราส่งรหัสยืนยันไปที่ {{email}} แล้ว',
   'auth.verificationCode': 'รหัสยืนยัน 6 หลัก',

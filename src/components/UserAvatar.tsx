@@ -4,8 +4,10 @@ import { getProfilePictureUrl } from '../lib/accountApi'
 import '../styles/user-avatar.css'
 
 function initials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean)
-  return parts.length > 1 ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase() : (parts[0]?.slice(0, 2) || 'NC').toUpperCase()
+  const parts = name.match(/[\p{L}\p{N}]+/gu) || []
+  const first = parts[0] || 'NC'
+  const last = parts.length > 1 ? parts[parts.length - 1] : undefined
+  return (last ? `${Array.from(first)[0]}${Array.from(last)[0]}` : Array.from(first).slice(0, 2).join('')).toUpperCase()
 }
 
 export default function UserAvatar({ name, className }: { name: string; className: string }) {

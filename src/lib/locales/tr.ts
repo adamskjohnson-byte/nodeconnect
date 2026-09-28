@@ -1,6 +1,11 @@
 import type { Translation } from './en'
 
 const tr: Translation = {
+  'notifications.title': 'Bildirimler', 'notifications.markAllRead': 'Tümünü okundu olarak işaretle', 'notifications.empty': 'Yeni bildirim yok', 'profile.accountMenu': '{{name}} hesap menüsü',
+  'notifications.emailVerifiedTitle': 'E-posta doğrulandı', 'notifications.emailVerifiedMessage': 'E-posta adresiniz başarıyla doğrulandı.',
+  'notifications.passwordTitle': 'Parola güncellendi', 'notifications.passwordMessage': 'Hesap parolanız değiştirildi veya sıfırlandı.',
+  'notifications.twoFactorTitle': 'İki faktörlü güvenlik güncellendi', 'notifications.twoFactorMessage': 'İki faktörlü kimlik doğrulama ayarları değiştirildi.',
+  'notifications.emailChangedTitle': 'E-posta adresi değiştirildi', 'notifications.emailChangedMessage': 'Hesabınızın e-posta adresi değiştirildi.',
   'auth.registrationOtpDescription': 'E-posta adresinize gönderilen 6 haneli kodu girin.',
   'auth.verificationCodeSentTo': '{{email}} adresine bir doğrulama kodu gönderdik.',
   'auth.verificationCode': '6 haneli doğrulama kodu',

@@ -1,6 +1,11 @@
 import type { Translation } from './en'
 
 const ko: Translation = {
+  'notifications.title': '알림', 'notifications.markAllRead': '모두 읽음으로 표시', 'notifications.empty': '새 알림이 없습니다', 'profile.accountMenu': '{{name}} 계정 메뉴',
+  'notifications.emailVerifiedTitle': '이메일 인증 완료', 'notifications.emailVerifiedMessage': '이메일 주소가 성공적으로 인증되었습니다.',
+  'notifications.passwordTitle': '비밀번호 업데이트', 'notifications.passwordMessage': '계정 비밀번호가 변경되거나 재설정되었습니다.',
+  'notifications.twoFactorTitle': '2단계 보안 설정 업데이트', 'notifications.twoFactorMessage': '2단계 인증 설정이 변경되었습니다.',
+  'notifications.emailChangedTitle': '이메일 주소 변경', 'notifications.emailChangedMessage': '계정 이메일 주소가 변경되었습니다.',
   'auth.registrationOtpDescription': '이메일 주소로 전송된 6자리 코드를 입력하세요.',
   'auth.verificationCodeSentTo': '{{email}} 주소로 인증 코드를 보냈습니다.',
   'auth.verificationCode': '6자리 인증 코드',

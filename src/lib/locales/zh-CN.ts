@@ -1,6 +1,11 @@
 import type { Translation } from './en'
 
 const zhCN: Translation = {
+  'notifications.title': '通知', 'notifications.markAllRead': '全部标为已读', 'notifications.empty': '没有新通知', 'profile.accountMenu': '{{name}}的账户菜单',
+  'notifications.emailVerifiedTitle': '邮箱已验证', 'notifications.emailVerifiedMessage': '您的邮箱地址已成功验证。',
+  'notifications.passwordTitle': '密码已更新', 'notifications.passwordMessage': '您的账户密码已更改或重置。',
+  'notifications.twoFactorTitle': '双重验证安全设置已更新', 'notifications.twoFactorMessage': '双重验证设置已更改。',
+  'notifications.emailChangedTitle': '邮箱地址已更改', 'notifications.emailChangedMessage': '您的账户邮箱地址已成功更改。',
   'auth.registrationOtpDescription': '请输入发送到您电子邮箱的 6 位验证码。',
   'auth.verificationCodeSentTo': '验证码已发送至 {{email}}。',
   'auth.verificationCode': '6 位验证码',

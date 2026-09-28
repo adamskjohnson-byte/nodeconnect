@@ -1,5 +1,10 @@
 import type { Translation } from './en'
 const ro: Translation = {
+  'notifications.title': 'Notificări', 'notifications.markAllRead': 'Marchează tot ca citit', 'notifications.empty': 'Nu există notificări noi', 'profile.accountMenu': 'Meniul contului {{name}}',
+  'notifications.emailVerifiedTitle': 'E-mail verificat', 'notifications.emailVerifiedMessage': 'Adresa ta de e-mail a fost verificată cu succes.',
+  'notifications.passwordTitle': 'Parolă actualizată', 'notifications.passwordMessage': 'Parola contului a fost schimbată sau resetată.',
+  'notifications.twoFactorTitle': 'Securitate în doi pași actualizată', 'notifications.twoFactorMessage': 'Setările autentificării în doi pași au fost schimbate.',
+  'notifications.emailChangedTitle': 'Adresă de e-mail schimbată', 'notifications.emailChangedMessage': 'Adresa de e-mail a contului a fost schimbată cu succes.',
   'auth.registrationOtpDescription': 'Introdu codul din 6 cifre trimis la adresa ta de e-mail.',
   'auth.verificationCodeSentTo': 'Am trimis un cod de verificare la {{email}}.',
   'auth.verificationCode': 'Cod de verificare din 6 cifre',

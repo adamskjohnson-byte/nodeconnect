@@ -1,6 +1,11 @@
 import type { Translation } from './en'
 
 const hi: Translation = {
+  'notifications.title': 'सूचनाएँ', 'notifications.markAllRead': 'सभी को पढ़ा हुआ चिह्नित करें', 'notifications.empty': 'कोई नई सूचना नहीं', 'profile.accountMenu': '{{name}} का खाता मेनू',
+  'notifications.emailVerifiedTitle': 'ईमेल सत्यापित', 'notifications.emailVerifiedMessage': 'आपका ईमेल पता सफलतापूर्वक सत्यापित हुआ।',
+  'notifications.passwordTitle': 'पासवर्ड अपडेट हुआ', 'notifications.passwordMessage': 'आपके खाते का पासवर्ड बदला या रीसेट किया गया।',
+  'notifications.twoFactorTitle': 'दो-चरण सुरक्षा अपडेट हुई', 'notifications.twoFactorMessage': 'दो-चरण प्रमाणीकरण सेटिंग बदली गईं।',
+  'notifications.emailChangedTitle': 'ईमेल पता बदला गया', 'notifications.emailChangedMessage': 'आपके खाते का ईमेल पता सफलतापूर्वक बदला गया।',
   'auth.registrationOtpDescription': 'अपने ईमेल पते पर भेजा गया 6 अंकों का कोड दर्ज करें।',
   'auth.verificationCodeSentTo': 'हमने {{email}} पर सत्यापन कोड भेजा है।',
   'auth.verificationCode': '6 अंकों का सत्यापन कोड',

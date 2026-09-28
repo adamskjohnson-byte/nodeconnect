@@ -1,5 +1,10 @@
 import type { Translation } from './en'
 const id: Translation = {
+  'notifications.title': 'Notifikasi', 'notifications.markAllRead': 'Tandai semua telah dibaca', 'notifications.empty': 'Tidak ada notifikasi baru', 'profile.accountMenu': 'Menu akun {{name}}',
+  'notifications.emailVerifiedTitle': 'Email terverifikasi', 'notifications.emailVerifiedMessage': 'Alamat email Anda berhasil diverifikasi.',
+  'notifications.passwordTitle': 'Kata sandi diperbarui', 'notifications.passwordMessage': 'Kata sandi akun Anda telah diubah atau diatur ulang.',
+  'notifications.twoFactorTitle': 'Keamanan dua faktor diperbarui', 'notifications.twoFactorMessage': 'Pengaturan autentikasi dua faktor telah diubah.',
+  'notifications.emailChangedTitle': 'Alamat email diubah', 'notifications.emailChangedMessage': 'Alamat email akun Anda berhasil diubah.',
   'auth.registrationOtpDescription': 'Masukkan kode 6 digit yang dikirim ke alamat email Anda.',
   'auth.verificationCodeSentTo': 'Kami mengirim kode verifikasi ke {{email}}.',
   'auth.verificationCode': 'Kode verifikasi 6 digit',

@@ -1,5 +1,10 @@
 import type { Translation } from './en'
 const vi: Translation = {
+  'notifications.title': 'Thông báo', 'notifications.markAllRead': 'Đánh dấu tất cả đã đọc', 'notifications.empty': 'Không có thông báo mới', 'profile.accountMenu': 'Menu tài khoản {{name}}',
+  'notifications.emailVerifiedTitle': 'Email đã được xác minh', 'notifications.emailVerifiedMessage': 'Địa chỉ email của bạn đã được xác minh thành công.',
+  'notifications.passwordTitle': 'Mật khẩu đã cập nhật', 'notifications.passwordMessage': 'Mật khẩu tài khoản đã được thay đổi hoặc đặt lại.',
+  'notifications.twoFactorTitle': 'Đã cập nhật bảo mật hai lớp', 'notifications.twoFactorMessage': 'Cài đặt xác thực hai yếu tố đã được thay đổi.',
+  'notifications.emailChangedTitle': 'Đã thay đổi địa chỉ email', 'notifications.emailChangedMessage': 'Địa chỉ email tài khoản đã được thay đổi thành công.',
   'auth.registrationOtpDescription': 'Nhập mã gồm 6 chữ số đã được gửi đến địa chỉ email của bạn.',
   'auth.verificationCodeSentTo': 'Chúng tôi đã gửi mã xác minh đến {{email}}.',
   'auth.verificationCode': 'Mã xác minh gồm 6 chữ số',

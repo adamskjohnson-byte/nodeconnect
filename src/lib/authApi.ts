@@ -53,3 +53,8 @@ export const getCurrentUser = async (): Promise<AuthUser | null> => {
   }
 }
 export const logout = () => request('/auth/logout.php', { method: 'POST' })
+
+export async function logoutAndNavigate(): Promise<void> {
+  await logout()
+  window.location.hash = '#home'
+}

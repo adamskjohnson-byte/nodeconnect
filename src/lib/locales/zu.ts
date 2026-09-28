@@ -1,5 +1,10 @@
 import type { Translation } from './en'
 const zu: Translation = {
+  'notifications.title': 'Izaziso', 'notifications.markAllRead': 'Maka konke njengokufundiwe', 'notifications.empty': 'Azikho izaziso ezintsha', 'profile.accountMenu': 'Imenyu ye-akhawunti ka-{{name}}',
+  'notifications.emailVerifiedTitle': 'I-imeyili iqinisekisiwe', 'notifications.emailVerifiedMessage': 'Ikheli lakho le-imeyili liqinisekiswe ngempumelelo.',
+  'notifications.passwordTitle': 'Iphasiwedi ibuyekeziwe', 'notifications.passwordMessage': 'Iphasiwedi ye-akhawunti yakho ishintshiwe noma isethwe kabusha.',
+  'notifications.twoFactorTitle': 'Ukuphepha kwezinyathelo ezimbili kubuyekeziwe', 'notifications.twoFactorMessage': 'Izilungiselelo zokuqinisekisa ngezinto ezimbili zishintshiwe.',
+  'notifications.emailChangedTitle': 'Ikheli le-imeyili lishintshiwe', 'notifications.emailChangedMessage': 'Ikheli le-imeyili le-akhawunti yakho lishintshwe ngempumelelo.',
   'auth.registrationOtpDescription': 'Faka ikhodi enamadijithi angu-6 ethunyelwe ekhelini lakho le-imeyili.',
   'auth.verificationCodeSentTo': 'Sithumele ikhodi yokuqinisekisa ku-{{email}}.',
   'auth.verificationCode': 'Ikhodi yokuqinisekisa enamadijithi angu-6',

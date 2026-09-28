@@ -1,6 +1,11 @@
 import type { Translation } from './en'
 
 const de: Translation = {
+  'notifications.title': 'Benachrichtigungen', 'notifications.markAllRead': 'Alle als gelesen markieren', 'notifications.empty': 'Keine neuen Benachrichtigungen', 'profile.accountMenu': 'Kontomenü von {{name}}',
+  'notifications.emailVerifiedTitle': 'E-Mail bestätigt', 'notifications.emailVerifiedMessage': 'Deine E-Mail-Adresse wurde bestätigt.',
+  'notifications.passwordTitle': 'Passwort aktualisiert', 'notifications.passwordMessage': 'Das Kontopasswort wurde geändert oder zurückgesetzt.',
+  'notifications.twoFactorTitle': 'Zwei-Faktor-Sicherheit aktualisiert', 'notifications.twoFactorMessage': 'Die Einstellungen der Zwei-Faktor-Authentifizierung wurden geändert.',
+  'notifications.emailChangedTitle': 'E-Mail-Adresse geändert', 'notifications.emailChangedMessage': 'Die E-Mail-Adresse deines Kontos wurde geändert.',
   'auth.registrationOtpDescription': 'Gib den 6-stelligen Code ein, den wir an deine E-Mail-Adresse gesendet haben.',
   'auth.verificationCodeSentTo': 'Wir haben einen Bestätigungscode an {{email}} gesendet.',
   'auth.verificationCode': '6-stelliger Bestätigungscode',

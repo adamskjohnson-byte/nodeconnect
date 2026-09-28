@@ -1,5 +1,10 @@
 import type { Translation } from './en'
 const bn: Translation = {
+  'notifications.title': 'বিজ্ঞপ্তি', 'notifications.markAllRead': 'সব পড়া হয়েছে হিসেবে চিহ্নিত করুন', 'notifications.empty': 'নতুন কোনো বিজ্ঞপ্তি নেই', 'profile.accountMenu': '{{name}}-এর অ্যাকাউন্ট মেনু',
+  'notifications.emailVerifiedTitle': 'ইমেইল যাচাই হয়েছে', 'notifications.emailVerifiedMessage': 'আপনার ইমেইল ঠিকানা সফলভাবে যাচাই হয়েছে।',
+  'notifications.passwordTitle': 'পাসওয়ার্ড আপডেট হয়েছে', 'notifications.passwordMessage': 'আপনার অ্যাকাউন্টের পাসওয়ার্ড পরিবর্তন বা রিসেট করা হয়েছে।',
+  'notifications.twoFactorTitle': 'দুই-ধাপ নিরাপত্তা আপডেট হয়েছে', 'notifications.twoFactorMessage': 'দুই-ধাপ যাচাইকরণের সেটিংস পরিবর্তন করা হয়েছে।',
+  'notifications.emailChangedTitle': 'ইমেইল ঠিকানা পরিবর্তিত হয়েছে', 'notifications.emailChangedMessage': 'আপনার অ্যাকাউন্টের ইমেইল ঠিকানা সফলভাবে পরিবর্তিত হয়েছে।',
   'auth.registrationOtpDescription': 'আপনার ইমেইল ঠিকানায় পাঠানো ৬ সংখ্যার কোডটি লিখুন।',
   'auth.verificationCodeSentTo': '{{email}} ঠিকানায় একটি যাচাইকরণ কোড পাঠানো হয়েছে।',
   'auth.verificationCode': '৬ সংখ্যার যাচাইকরণ কোড',

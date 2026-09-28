@@ -1,5 +1,10 @@
 import type { Translation } from './en'
 const el: Translation = {
+  'notifications.title': 'Ειδοποιήσεις', 'notifications.markAllRead': 'Επισήμανση όλων ως αναγνωσμένων', 'notifications.empty': 'Δεν υπάρχουν νέες ειδοποιήσεις', 'profile.accountMenu': 'Μενού λογαριασμού {{name}}',
+  'notifications.emailVerifiedTitle': 'Το email επαληθεύτηκε', 'notifications.emailVerifiedMessage': 'Η διεύθυνση email σας επαληθεύτηκε με επιτυχία.',
+  'notifications.passwordTitle': 'Ο κωδικός πρόσβασης ενημερώθηκε', 'notifications.passwordMessage': 'Ο κωδικός του λογαριασμού σας άλλαξε ή επαναφέρθηκε.',
+  'notifications.twoFactorTitle': 'Ενημερώθηκε η ασφάλεια δύο παραγόντων', 'notifications.twoFactorMessage': 'Οι ρυθμίσεις ελέγχου ταυτότητας δύο παραγόντων άλλαξαν.',
+  'notifications.emailChangedTitle': 'Άλλαξε η διεύθυνση email', 'notifications.emailChangedMessage': 'Η διεύθυνση email του λογαριασμού σας άλλαξε με επιτυχία.',
   'auth.registrationOtpDescription': 'Πληκτρολογήστε τον 6ψήφιο κωδικό που στάλθηκε στη διεύθυνση email σας.',
   'auth.verificationCodeSentTo': 'Στείλαμε κωδικό επαλήθευσης στη διεύθυνση {{email}}.',
   'auth.verificationCode': '6ψήφιος κωδικός επαλήθευσης',

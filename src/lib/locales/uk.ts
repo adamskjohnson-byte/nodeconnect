@@ -1,6 +1,11 @@
 import type { Translation } from './en'
 
 const uk: Translation = {
+  'notifications.title': 'Сповіщення', 'notifications.markAllRead': 'Позначити все як прочитане', 'notifications.empty': 'Нових сповіщень немає', 'profile.accountMenu': 'Меню облікового запису {{name}}',
+  'notifications.emailVerifiedTitle': 'Електронну пошту підтверджено', 'notifications.emailVerifiedMessage': 'Адресу електронної пошти успішно підтверджено.',
+  'notifications.passwordTitle': 'Пароль оновлено', 'notifications.passwordMessage': 'Пароль облікового запису змінено або скинуто.',
+  'notifications.twoFactorTitle': 'Налаштування двофакторного захисту змінено', 'notifications.twoFactorMessage': 'Налаштування двофакторної автентифікації змінено.',
+  'notifications.emailChangedTitle': 'Адресу електронної пошти змінено', 'notifications.emailChangedMessage': 'Адресу електронної пошти облікового запису змінено.',
   'auth.registrationOtpDescription': 'Введіть 6-значний код, надісланий на вашу електронну адресу.',
   'auth.verificationCodeSentTo': 'Код підтвердження надіслано на адресу {{email}}.',
   'auth.verificationCode': '6-значний код підтвердження',

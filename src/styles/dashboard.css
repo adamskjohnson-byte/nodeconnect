@@ -9,3 +9,50 @@
 @media (max-width: 1100px) { .dashboard-content { width: min(100% - 40px, 900px); }.dashboard-sidebar { width: 200px; flex-basis: 200px; }.dashboard-stat-grid { grid-template-columns: repeat(2, 1fr); }.dashboard-overview-grid, .dashboard-activity-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .dashboard-page { display: block; }.dashboard-sidebar { width: min(82vw, 280px); flex-basis: auto; position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-102%); transition: transform .25s ease; box-shadow: 15px 0 45px rgba(0,0,0,.6); }.dashboard-sidebar.is-open { transform: translateX(0); }.dashboard-sidebar-backdrop { display: block; position: fixed; z-index: 15; inset: 0; border: 0; background: rgba(0,0,0,.68); }.dashboard-topbar { min-height: 71px; padding: 0 16px; gap: 12px; }.dashboard-menu-button { width: 30px; height: 30px; padding: 7px 5px; display: grid; gap: 4px; border: 1px solid rgba(0,255,136,.24); border-radius: 5px; background: #0c1322; }.dashboard-menu-button span { display: block; width: 18px; height: 1px; background: var(--green); }.dashboard-topbar-title { min-width: 0; margin-right: auto; }.dashboard-topbar-title > span { display: none; }.dashboard-topbar-title h1 { font-size: 18px; }.dashboard-topbar-actions { gap: 9px; }.dashboard-user > div:last-child { display: none; }.dashboard-user-mark, .dashboard-icon-button { width: 29px; height: 29px; }.dashboard-content { width: min(100% - 32px, 560px); padding: 28px 0 45px; }.dashboard-welcome { display: block; margin-bottom: 24px; }.dashboard-welcome h2 { margin-top: 9px; font-size: 26px; }.dashboard-welcome p { max-width: 330px; font-size: 10px; }.dashboard-live-status { display: inline-block; margin-top: 15px; }.dashboard-stat-grid { grid-template-columns: 1fr 1fr; gap: 9px; }.dashboard-stat-card { min-height: 92px; padding: 14px 11px; gap: 9px; }.dashboard-stat-icon { width: 29px; height: 29px; flex-basis: 29px; }.dashboard-stat-icon img { width: 13px; }.dashboard-stat-card span { font-size: 8px; }.dashboard-stat-card strong { font-size: 18px; }.dashboard-panel { padding: 19px 16px 17px; }.dashboard-node-visual { gap: 13px; }.dashboard-node-ring { width: 62px; height: 62px; flex-basis: 62px; }.dashboard-node-ring img { width: 22px; }.dashboard-node-visual h3 { font-size: 13px; }.dashboard-node-visual p { font-size: 9px; }.dashboard-action-grid { grid-template-columns: 1fr 1fr; gap: 9px; }.dashboard-action { min-height: 55px; padding-inline: 10px; font-size: 9px; }.dashboard-action-icon { width: 24px; height: 24px; }.dashboard-action-icon img { width: 12px; } }
 @media (max-width: 360px) { .dashboard-content { width: calc(100% - 24px); }.dashboard-topbar { padding-inline: 12px; }.dashboard-user-mark { width: 27px; height: 27px; }.dashboard-icon-button { width: 27px; height: 27px; }.dashboard-stat-card { padding-inline: 8px; }.dashboard-stat-card strong { font-size: 16px; }.dashboard-stat-card span { font-size: 7px; }.dashboard-node-visual { align-items: flex-start; }.dashboard-node-ring { margin-top: 4px; }.dashboard-node-visual p { max-width: 180px; } }
+.dashboard-popover-anchor { position: relative; flex: 0 0 auto; }
+.dashboard-icon-button, .dashboard-user-button { color: inherit; cursor: pointer; }
+.dashboard-icon-button:hover, .dashboard-icon-button[aria-expanded="true"], .dashboard-user-button:hover, .dashboard-user-button[aria-expanded="true"] { border-color: rgba(0,255,136,.52); background-color: #101b26; }
+.dashboard-icon-button:focus-visible, .dashboard-user-button:focus-visible, .dashboard-popover button:focus-visible, .dashboard-popover a:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.dashboard-notification-glyph { position: absolute; inset: 0; }
+.dashboard-notification-dot { z-index: 1; width: 7px; height: 7px; right: 2px; top: 2px; border: 1px solid #07100c; }
+.dashboard-user-button { min-height: 36px; padding: 2px; display: flex; align-items: center; gap: 9px; border: 1px solid transparent; border-radius: 20px; background: transparent; text-align: left; }
+.dashboard-user-button .dashboard-user-mark { flex: 0 0 31px; }
+.dashboard-user-copy { min-width: 0; }
+.dashboard-user-copy strong, .dashboard-user-copy > span { display: block; }
+.dashboard-user-copy strong { max-width: 150px; overflow: hidden; color: #dce2f7; font-size: 10px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.dashboard-user-copy > span { margin-top: 2px; color: #697484; font-size: 8px; }
+.dashboard-popover { position: absolute; z-index: 50; top: calc(100% + 12px); right: 0; overflow: hidden; border: 1px solid rgba(76,215,246,.2); border-radius: 7px; background: linear-gradient(145deg, #111a27, #070b12); box-shadow: 0 16px 42px rgba(0,0,0,.58), 0 0 22px rgba(0,54,64,.14); }
+.dashboard-account-menu { width: min(276px, calc(100vw - 24px)); padding: 8px; }
+.dashboard-account-summary { padding: 11px 10px 13px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.dashboard-account-summary strong, .dashboard-account-summary span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dashboard-account-summary strong { color: #edf2f8; font-size: 12px; font-weight: 600; }
+.dashboard-account-summary span { margin-top: 4px; color: #8290a2; font-size: 10px; }
+.dashboard-account-menu a, .dashboard-account-menu > button { width: 100%; min-height: 38px; padding: 0 10px; display: flex; align-items: center; border: 0; border-radius: 4px; background: transparent; color: #c6d0dc; font: inherit; font-size: 11px; text-align: left; text-decoration: none; cursor: pointer; }
+.dashboard-account-menu a:hover, .dashboard-account-menu > button:hover { background: rgba(76,215,246,.08); color: #fff; }
+.dashboard-account-menu > button { border-top: 1px solid rgba(255,255,255,.08); color: #ffb0cd; }
+.dashboard-notifications-panel { width: min(370px, calc(100vw - 24px)); max-height: min(520px, calc(100dvh - 100px)); display: flex; flex-direction: column; }
+.dashboard-notifications-panel > header { min-height: 48px; padding: 0 13px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.dashboard-notifications-panel > header h2 { margin: 0; color: #edf2f8; font-size: 13px; font-weight: 600; }
+.dashboard-notifications-panel > header button { padding: 6px 0; border: 0; background: transparent; color: var(--green); font: inherit; font-size: 9px; cursor: pointer; }
+.dashboard-notifications-panel > header button:disabled { color: #657080; cursor: default; }
+.dashboard-notifications-panel ul { margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.dashboard-notifications-panel li + li { border-top: 1px solid rgba(255,255,255,.06); }
+.dashboard-notifications-panel li > button { width: 100%; min-height: 72px; padding: 11px 13px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.dashboard-notifications-panel li > button:hover { background: rgba(76,215,246,.06); }
+.dashboard-notifications-panel li.is-unread > button { background: rgba(0,255,136,.035); }
+.dashboard-notification-copy { min-width: 0; display: grid; gap: 4px; }
+.dashboard-notification-copy strong { color: #e7edf6; font-size: 10px; font-weight: 600; }
+.dashboard-notification-copy > span { color: #9aa7b7; font-size: 9px; line-height: 1.45; }
+.dashboard-notification-copy time { color: #657080; font-size: 8px; }
+.dashboard-notifications-panel li > button > i { width: 6px; height: 6px; flex: 0 0 6px; margin-top: 4px; border-radius: 50%; background: var(--green); box-shadow: 0 0 7px rgba(0,255,136,.48); }
+.dashboard-notifications-empty { margin: 0; padding: 25px 16px; color: #8592a2; font-size: 10px; text-align: center; }
+:root[data-theme="light"] .dashboard-popover { border-color: rgba(0,100,55,.2); background: linear-gradient(145deg, #fff, #edf4f0); box-shadow: 0 16px 42px rgba(16,38,27,.2); }
+:root[data-theme="light"] .dashboard-popover h2, :root[data-theme="light"] .dashboard-account-summary strong, :root[data-theme="light"] .dashboard-notification-copy strong { color: #18251e; }
+:root[data-theme="light"] .dashboard-account-menu a, :root[data-theme="light"] .dashboard-account-menu > button { color: #35473d; }
+@media (max-width: 700px) {
+	.dashboard-user-copy { display: none; }
+	.dashboard-topbar-actions { position: relative; }
+	.dashboard-popover { position: fixed; top: 78px; right: 6px; }
+	.dashboard-notifications-panel { width: min(370px, calc(100vw - 40px)); max-height: calc(100dvh - 96px); }
+	.dashboard-account-menu { width: min(276px, calc(100vw - 40px)); }
+}

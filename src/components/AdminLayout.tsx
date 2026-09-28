@@ -3,7 +3,7 @@ import logo from '../assets/icons/Icon-5.svg'
 import listIcon from '../assets/icons/Icon-11.svg'
 import nodesIcon from '../assets/icons/Icon-17.svg'
 import shieldIcon from '../assets/icons/Icon-9.svg'
-import { logout } from '../lib/authApi'
+import { logoutAndNavigate } from '../lib/authApi'
 import '../styles/admin.css'
 import { useAppTranslation } from '../lib/i18n'
 
@@ -20,8 +20,7 @@ export default function AdminLayout({ children, activePage, title, eyebrow = 'No
   const [menuOpen, setMenuOpen] = useState(false)
   const handleLogout = async (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
-    await logout()
-    window.location.hash = '#home'
+    await logoutAndNavigate()
   }
 
   return <div className="admin-page">

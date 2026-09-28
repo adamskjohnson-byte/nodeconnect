@@ -38,6 +38,41 @@ function accountAudit(PDO $pdo, ?int $userId, string $eventType, array $metadata
         ':user_agent' => activityUserAgent() !== '' ? substr(activityUserAgent(), 0, 500) : null,
         ':metadata' => $metadata === [] ? null : json_encode($metadata, JSON_UNESCAPED_SLASHES),
     ]);
+
+    if ($userId === null) {
+        return;
+    }
+    $notification = match ($eventType) {
+        'email_verified' => ['notifications.emailVerifiedTitle', 'notifications.emailVerifiedMessage'],
+        'password_changed', 'password_reset_completed' => ['notifications.passwordTitle', 'notifications.passwordMessage'],
+        'two_factor_enabled', 'two_factor_disabled' => ['notifications.twoFactorTitle', 'notifications.twoFactorMessage'],
+        'email_change_confirmed' => ['notifications.emailChangedTitle', 'notifications.emailChangedMessage'],
+        default => null,
+    };
+    if ($notification === null) {
+        return;
+    }
+
+    try {
+        $preference = $pdo->prepare('SELECT activity_notifications FROM user_preferences WHERE user_id = :user_id LIMIT 1');
+        $preference->execute([':user_id' => $userId]);
+        $activityNotificationsEnabled = $preference->fetchColumn();
+        if ($activityNotificationsEnabled !== false && (int) $activityNotificationsEnabled === 0) {
+            return;
+        }
+        $insert = $pdo->prepare(
+            'INSERT INTO user_notifications (user_id, type, title, message)
+             VALUES (:user_id, :type, :title, :message)'
+        );
+        $insert->execute([
+            ':user_id' => $userId,
+            ':type' => $eventType,
+            ':title' => $notification[0],
+            ':message' => $notification[1],
+        ]);
+    } catch (Throwable $error) {
+        error_log('NodeConnect account notification could not be recorded.');
+    }
 }
 
 function ensureReferralId(PDO $pdo, int $userId): string

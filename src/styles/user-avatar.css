@@ -1,3 +1,4 @@
-.profile-avatar, .dashboard-user-mark { position: relative; overflow: hidden; }
-.user-avatar-image { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
-.user-avatar-fallback { position: relative; display: grid; place-items: center; width: 100%; height: 100%; }
+.profile-avatar, .dashboard-user-mark { position: relative; overflow: hidden; isolation: isolate; }
+.user-avatar-image { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+.user-avatar-fallback,
+.dashboard-user .user-avatar-fallback { position: static; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 0; line-height: 1; text-align: center; white-space: nowrap; }

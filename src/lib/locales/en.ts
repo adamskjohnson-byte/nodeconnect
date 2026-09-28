@@ -1,4 +1,9 @@
 const en = {
+  'notifications.title': 'Notifications', 'notifications.markAllRead': 'Mark all as read', 'notifications.empty': 'No new notifications', 'profile.accountMenu': '{{name}} account menu',
+  'notifications.emailVerifiedTitle': 'Email verified', 'notifications.emailVerifiedMessage': 'Your email address was verified successfully.',
+  'notifications.passwordTitle': 'Password updated', 'notifications.passwordMessage': 'Your account password was changed or reset.',
+  'notifications.twoFactorTitle': 'Two-factor security updated', 'notifications.twoFactorMessage': 'Two-factor authentication settings were changed.',
+  'notifications.emailChangedTitle': 'Email address changed', 'notifications.emailChangedMessage': 'Your account email address was changed successfully.',
   'auth.registrationOtpDescription': 'Enter the 6-digit code sent to your email address.',
   'auth.verificationCodeSentTo': 'We sent a verification code to {{email}}.',
   'auth.verificationCode': '6-digit verification code',
