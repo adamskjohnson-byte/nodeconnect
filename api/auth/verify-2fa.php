@@ -70,6 +70,7 @@ try {
     setcookie('nodeconnect_2fa_challenge', '', sessionCookieOptions(time() - 3600));
 
     $challenge['last_login_at'] = (new DateTimeImmutable())->format('Y-m-d H:i:s');
+    sendWelcomeEmailIfNeeded($pdo, (int) $challenge['user_id']);
     respond(['success' => true, 'message' => 'Signed in successfully.', 'user' => safeUser($challenge)]);
 } catch (Throwable $error) {
     if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) {

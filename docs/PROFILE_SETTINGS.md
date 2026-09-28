@@ -161,6 +161,14 @@ TOTP enrollment/login/recovery already existed in the PHP backend and uses the e
 
 The centralized `src/lib/i18n.ts` uses i18next/react-i18next with 25 locales. On 2026-09-27, all 548 keys were present in every locale with no extra keys or placeholder mismatches (`node scripts/check-i18n.mjs`). The eight registration-OTP strings were added across all locales. Arabic retains its RTL document direction and layout rules. Catalog parity does not replace native-speaker review of translation quality.
 
+## First-Login Welcome Email
+
+Migration `database/migrations/005_welcome_email.sql` is the next migration after 004. It adds `welcome_email_eligible_at`, `welcome_email_claimed_at`, and `welcome_email_sent_at` to `users`, all nullable. Apply it manually once after migration 004 and before deploying the PHP code that writes/reads these columns. Existing rows stay NULL and are not eligible; the new registration insert sets eligibility. No backfill or bulk mail occurs.
+
+The shared `sendWelcomeEmailIfNeeded()` helper is called only after the final authenticated session transaction commits: after the ordinary password login for accounts without 2FA, or after successful TOTP/recovery-code completion for accounts with 2FA. It verifies active status, verified email, and registration eligibility. The single conditional SQL claim prevents concurrent login requests from both sending. It uses the current database email and existing Resend service; only successful Resend HTTP acceptance sets `welcome_email_sent_at`. Send failures release the claim, retain the unsent state for a later successful login, and are logged through the sanitized existing provider diagnostics without failing authentication. A stale claim is recoverable after five minutes.
+
+Subject: `Welcome to NodeConnect`. The email uses a small inline-styled, mobile-readable dark/navy/green template, a configured-frontend URL from `NODECONNECT_FRONTEND_URL`, and a safely escaped first name with a generic fallback. It includes no invented support contact. It is not tied to optional notification preferences and does not create an in-app notification. Existing email-change, OTP, and 2FA notification flows are unchanged. Actual delivery/inbox receipt and production migration application must be verified after deployment; they were not performed by this change.
+
 ## Validation performed for these additions
 
 - `npm run build` passed after frontend edits (TypeScript project build plus Vite production bundle).

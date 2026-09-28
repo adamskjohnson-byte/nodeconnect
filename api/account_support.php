@@ -278,6 +278,104 @@ function securityEmail(PDO $pdo, int $userId, string $eventType, string $subject
     }
 }
 
+function welcomeEmailHtml(string $fullName, string $url): string
+{
+    $parts = preg_split('/\s+/u', trim($fullName), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    $firstToken = (string) ($parts[0] ?? '');
+    $firstName = preg_match('/[<>&]/', $firstToken) === 1
+        ? ''
+        : trim((string) preg_replace('/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/u', '', $firstToken));
+    if ($firstName !== '' && preg_match('/[\p{L}\p{N}]/u', $firstName) !== 1) {
+        $firstName = '';
+    }
+    $greeting = $firstName !== ''
+        ? 'Welcome to NodeConnect, ' . htmlspecialchars($firstName, ENT_QUOTES, 'UTF-8') . '!'
+        : 'Welcome to NodeConnect!';
+    $escapedUrl = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+
+    return '<!doctype html><html><body style="margin:0;padding:0;background-color:#050807;color:#e8f1ed;font-family:Arial,Helvetica,sans-serif">'
+        . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#050807;padding:24px 12px"><tr><td align="center">'
+        . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background-color:#0b1210;border:1px solid #174b35;border-radius:10px">'
+        . '<tr><td style="padding:30px 28px 26px"><p style="margin:0 0 22px;color:#00ff88;font-size:12px;font-weight:bold;letter-spacing:2px">NODECONNECT</p>'
+        . '<h1 style="margin:0 0 18px;color:#e5eaf7;font-size:25px;line-height:1.25">' . $greeting . '</h1>'
+        . '<p style="margin:0 0 14px;color:#c6d1dc;font-size:15px;line-height:1.65">Your account has been successfully verified, and you are officially part of NodeConnect.</p>'
+        . '<p style="margin:0 0 24px;color:#9eabb8;font-size:14px;line-height:1.65">Your account is ready to use. Sign in to explore the features available to you. We are glad to have you with us.</p>'
+        . '<p style="margin:0 0 24px"><a href="' . $escapedUrl . '" style="display:inline-block;padding:13px 20px;border-radius:5px;background-color:#00ff88;color:#062016;font-size:14px;font-weight:bold;text-decoration:none">Open NodeConnect</a></p>'
+        . '<p style="margin:0;color:#aab7c2;font-size:14px;line-height:1.6">Welcome to NodeConnect.<br>— The NodeConnect Team</p>'
+        . '<hr style="height:1px;margin:25px 0 16px;border:0;background-color:#23352e">'
+        . '<p style="margin:0;color:#708078;font-size:11px;line-height:1.5">You are receiving this message because your NodeConnect email was verified.</p>'
+        . '</td></tr></table></td></tr></table></body></html>';
+}
+
+function clearWelcomeEmailClaim(PDO $pdo, int $userId): void
+{
+    try {
+        $pdo->prepare(
+            'UPDATE users SET welcome_email_claimed_at = NULL
+             WHERE id = :id AND welcome_email_sent_at IS NULL AND welcome_email_claimed_at IS NOT NULL'
+        )->execute([':id' => $userId]);
+    } catch (Throwable $error) {
+        error_log('NodeConnect welcome email claim could not be released.');
+    }
+}
+
+function sendWelcomeEmailIfNeeded(PDO $pdo, int $userId): void
+{
+    $sendAccepted = false;
+    try {
+        $claim = $pdo->prepare(
+            'UPDATE users
+             SET welcome_email_claimed_at = CURRENT_TIMESTAMP
+             WHERE id = :id
+               AND status = \'active\'
+               AND email_verified_at IS NOT NULL
+               AND welcome_email_eligible_at IS NOT NULL
+               AND welcome_email_sent_at IS NULL
+               AND (welcome_email_claimed_at IS NULL OR welcome_email_claimed_at < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 5 MINUTE))'
+        );
+        $claim->execute([':id' => $userId]);
+        if ($claim->rowCount() !== 1) {
+            return;
+        }
+
+        $query = $pdo->prepare(
+            'SELECT full_name, email FROM users
+             WHERE id = :id AND status = \'active\' AND email_verified_at IS NOT NULL
+             AND welcome_email_eligible_at IS NOT NULL AND welcome_email_sent_at IS NULL
+             AND welcome_email_claimed_at IS NOT NULL LIMIT 1'
+        );
+        $query->execute([':id' => $userId]);
+        $user = $query->fetch();
+        if (!$user || !filter_var((string) $user['email'], FILTER_VALIDATE_EMAIL)) {
+            clearWelcomeEmailClaim($pdo, $userId);
+            return;
+        }
+
+        $url = frontendUrl('#home');
+        $html = welcomeEmailHtml((string) $user['full_name'], $url);
+        $sendAccepted = sendResendEmail((string) $user['email'], 'Welcome to NodeConnect', $html);
+        unset($user, $html, $url);
+        if (!$sendAccepted) {
+            clearWelcomeEmailClaim($pdo, $userId);
+            return;
+        }
+
+        $markSent = $pdo->prepare(
+            'UPDATE users SET welcome_email_sent_at = CURRENT_TIMESTAMP, welcome_email_claimed_at = NULL
+             WHERE id = :id AND welcome_email_sent_at IS NULL AND welcome_email_claimed_at IS NOT NULL'
+        );
+        $markSent->execute([':id' => $userId]);
+        if ($markSent->rowCount() !== 1) {
+            error_log('NodeConnect welcome email was accepted but its sent marker could not be recorded.');
+        }
+    } catch (Throwable $error) {
+        if (!$sendAccepted) {
+            clearWelcomeEmailClaim($pdo, $userId);
+        }
+        error_log('NodeConnect welcome email processing failed.');
+    }
+}
+
 function actionEmail(string $to, string $name, string $subject, string $message, string $url, string $buttonLabel): bool
 {
     $escapedName = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');

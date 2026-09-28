@@ -41,7 +41,7 @@ try {
     }
 
     $pdo->beginTransaction();
-    $statement = $pdo->prepare('INSERT INTO users (full_name, email, password_hash) VALUES (:full_name, :email, :password_hash)');
+    $statement = $pdo->prepare('INSERT INTO users (full_name, email, password_hash, welcome_email_eligible_at) VALUES (:full_name, :email, :password_hash, CURRENT_TIMESTAMP)');
     $statement->execute([
         ':full_name' => $fullName,
         ':email' => $email,

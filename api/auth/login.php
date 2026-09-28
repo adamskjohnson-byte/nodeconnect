@@ -68,6 +68,7 @@ try {
 
     $user['last_login_at'] = (new DateTimeImmutable())->format('Y-m-d H:i:s');
     unset($user['password_hash']);
+    sendWelcomeEmailIfNeeded($pdo, (int) $user['id']);
     respond(['success' => true, 'message' => 'Signed in successfully.', 'user' => safeUser($user)]);
 } catch (Throwable $error) {
     if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) {
