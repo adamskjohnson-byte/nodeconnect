@@ -43,14 +43,14 @@ export default function Auth() {
     if (mode !== 'verify-email' || !resetToken || verificationStarted.current === resetToken) return
     verificationStarted.current = resetToken
     setSubmitting(true)
-    verifyEmail(resetToken).then((response) => setMessage(response.message)).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : 'Unable to verify this email address.')).finally(() => setSubmitting(false))
+    verifyEmail(resetToken).then(() => setMessage(t('profile.emailAddressVerified'))).catch(() => setError(t('errors.verifyEmail'))).finally(() => setSubmitting(false))
   }, [mode, resetToken])
 
   useEffect(() => {
     if (mode !== 'confirm-email-change' || !resetToken || emailChangeStarted.current === resetToken) return
     emailChangeStarted.current = resetToken
     setSubmitting(true)
-    confirmEmailChange(resetToken).then((response) => setMessage(response.message)).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : 'Unable to confirm this email change.')).finally(() => setSubmitting(false))
+    confirmEmailChange(resetToken).then(() => setMessage(t('profile.emailAddressVerified'))).catch(() => setError(t('errors.confirmEmailChange'))).finally(() => setSubmitting(false))
   }, [mode, resetToken])
 
   const changeMode = (nextMode: AuthMode) => {
@@ -81,29 +81,30 @@ export default function Auth() {
         if (response.requires_2fa) {
           setCode('')
           changeMode('two-factor')
-          setMessage(response.message || 'Enter your authenticator or recovery code.')
+          setMessage(t('auth.enterSecondFactor'))
         } else {
           finishAuthentication(response.user)
         }
       }
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Something went wrong. Please try again.')
+      setError(t('errors.generic'))
     } finally { setSubmitting(false) }
   }
 
   const submitForgot = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setSubmitting(true); setError(''); setMessage('')
-    try { setMessage((await requestPasswordReset(email)).message) }
-    catch (reason) { setError(reason instanceof Error ? reason.message : 'Unable to process this request.') }
+    try { await requestPasswordReset(email); setMessage(t('auth.sendResetLink')) }
+    catch { setError(t('errors.processRequest')) }
     finally { setSubmitting(false) }
   }
 
   const submitReset = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setSubmitting(true); setError(''); setMessage('')
     try {
-      setMessage((await resetPassword(resetToken, password, confirmPassword)).message)
+      await resetPassword(resetToken, password, confirmPassword)
+      setMessage(t('auth.resetPassword'))
       setPassword(''); setConfirmPassword('')
-    } catch (reason) { setError(reason instanceof Error ? reason.message : 'Unable to reset your password.') }
+    } catch { setError(t('errors.resetPassword')) }
     finally { setSubmitting(false) }
   }
 
@@ -112,20 +113,22 @@ export default function Auth() {
     try {
       const response = await verifyLoginTwoFactor(code)
       finishAuthentication(response.user)
-    } catch (reason) { setError(reason instanceof Error ? reason.message : 'Unable to verify this code.') }
+    } catch { setError(t('errors.verifyCode')) }
     finally { setSubmitting(false) }
   }
 
   const specialMode = mode === 'forgot' || mode === 'reset-password' || mode === 'verify-email' || mode === 'confirm-email-change' || mode === 'two-factor'
-  return <div className="auth-page"><header className="auth-header"><a className="auth-brand" href="#home"><img src={logo} alt="" /><span>NodeConnect</span></a><a className="auth-back" href="#home">{t('nav.home')}</a></header><main className="auth-main"><section className="auth-card" aria-labelledby="auth-title"><div className="auth-orbit" aria-hidden="true"><span /></div><p className="auth-kicker">NODECONNECT ACCESS</p><h1 id="auth-title">{mode === 'forgot' ? 'Reset your password' : mode === 'reset-password' ? 'Choose a new password' : mode === 'verify-email' ? 'Verify your email' : mode === 'confirm-email-change' ? 'Confirm email change' : mode === 'two-factor' ? 'Two-factor verification' : 'Welcome to NodeConnect'}</h1><p className="auth-intro">{mode === 'forgot' ? 'Enter your account email and we will send a reset link if the account can be found.' : mode === 'reset-password' ? 'Choose a new password for your NodeConnect account.' : mode === 'verify-email' ? 'Verifying the secure link for your account.' : mode === 'confirm-email-change' ? 'Confirming the new email address for your account.' : mode === 'two-factor' ? 'Enter your six-digit authenticator code or a single-use recovery code.' : 'Create an account or sign in to continue to the NodeConnect ecosystem.'}</p>
-    {!specialMode && <div className="auth-tabs" role="tablist" aria-label="Authentication mode"><button className={mode === 'create' ? 'is-active' : ''} type="button" role="tab" aria-selected={mode === 'create'} onClick={() => changeMode('create')}>{t('nav.createAccount')}</button><button className={mode === 'signin' ? 'is-active' : ''} type="button" role="tab" aria-selected={mode === 'signin'} onClick={() => changeMode('signin')}>{t('nav.signIn')}</button></div>}
+  const titleKey = mode === 'forgot' ? 'auth.resetPasswordTitle' : mode === 'reset-password' ? 'auth.choosePasswordTitle' : mode === 'verify-email' ? 'auth.verifyEmailTitle' : mode === 'confirm-email-change' ? 'auth.confirmEmailChangeTitle' : mode === 'two-factor' ? 'auth.twoFactorTitle' : 'auth.welcome'
+  const introKey = mode === 'forgot' ? 'auth.resetPasswordDescription' : mode === 'reset-password' ? 'auth.choosePasswordDescription' : mode === 'verify-email' ? 'auth.verifyingEmail' : mode === 'confirm-email-change' ? 'auth.confirmingEmailChange' : mode === 'two-factor' ? 'auth.twoFactorDescription' : 'auth.intro'
+  return <div className="auth-page"><header className="auth-header"><a className="auth-brand" href="#home"><img src={logo} alt="" /><span>NodeConnect</span></a><a className="auth-back" href="#home">{t('common.backHome')}</a></header><main className="auth-main"><section className="auth-card" aria-labelledby="auth-title"><div className="auth-orbit" aria-hidden="true"><span /></div><p className="auth-kicker">{t('auth.access')}</p><h1 id="auth-title">{t(titleKey)}</h1><p className="auth-intro">{t(introKey)}</p>
+    {!specialMode && <div className="auth-tabs" role="tablist" aria-label={t('auth.access')}><button className={mode === 'create' ? 'is-active' : ''} type="button" role="tab" aria-selected={mode === 'create'} onClick={() => changeMode('create')}>{t('auth.createAccount')}</button><button className={mode === 'signin' ? 'is-active' : ''} type="button" role="tab" aria-selected={mode === 'signin'} onClick={() => changeMode('signin')}>{t('auth.signIn')}</button></div>}
     {(message || error) && <p className={error ? 'auth-message is-error' : 'auth-message'} role={error ? 'alert' : 'status'}>{error || message}</p>}
-    {(mode === 'create' || mode === 'signin') && <form onSubmit={submitAuth}>{mode === 'create' && <label>{t('common.fullName')}<input type="text" value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="Your full name" autoComplete="name" maxLength={150} required disabled={submitting} /></label>}<label>{t('common.emailAddress')}<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" required disabled={submitting} /></label><label>{t('common.password')}<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter your password" autoComplete={mode === 'create' ? 'new-password' : 'current-password'} minLength={mode === 'create' ? 12 : undefined} maxLength={128} required disabled={submitting} /></label>{mode === 'create' ? <label>{t('common.confirmPassword')}<input type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="Confirm your password" autoComplete="new-password" required disabled={submitting} /></label> : <button className="forgot-link" type="button" onClick={() => changeMode('forgot')}>Forgot Password?</button>}<button className="auth-primary" type="submit" disabled={submitting}>{submitting ? 'Please wait...' : mode === 'create' ? 'Create Account' : 'Sign In'}</button></form>}
-    {mode === 'forgot' && <form onSubmit={submitForgot}><label>{t('common.emailAddress')}<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" required disabled={submitting} /></label><button className="auth-primary" type="submit" disabled={submitting}>{submitting ? 'Please wait...' : 'Send Reset Link'}</button></form>}
-    {mode === 'reset-password' && <form onSubmit={submitReset}><label>New Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" minLength={12} maxLength={128} required disabled={submitting} /></label><label>Confirm New Password<input type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" minLength={12} maxLength={128} required disabled={submitting} /></label><button className="auth-primary" type="submit" disabled={submitting || !resetToken}>{submitting ? 'Please wait...' : 'Reset Password'}</button></form>}
-    {(mode === 'verify-email' || mode === 'confirm-email-change') && !submitting && !message && !error && <p className="auth-message is-error">This secure link is invalid or expired.</p>}
-    {mode === 'two-factor' && <form onSubmit={submitTwoFactor}><label>Authenticator or recovery code<input type="text" inputMode="text" autoComplete="one-time-code" value={code} onChange={(event) => setCode(event.target.value)} maxLength={40} required disabled={submitting} /></label><button className="auth-primary" type="submit" disabled={submitting}>{submitting ? 'Verifying...' : 'Verify and Sign In'}</button></form>}
+    {(mode === 'create' || mode === 'signin') && <form onSubmit={submitAuth}>{mode === 'create' && <label>{t('common.fullName')}<input type="text" value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder={t('auth.yourFullName')} autoComplete="name" maxLength={150} required disabled={submitting} /></label>}<label>{t('common.emailAddress')}<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder={t('auth.emailPlaceholder')} autoComplete="email" required disabled={submitting} /></label><label>{t('common.password')}<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder={t('auth.enterPassword')} autoComplete={mode === 'create' ? 'new-password' : 'current-password'} minLength={mode === 'create' ? 12 : undefined} maxLength={128} required disabled={submitting} /></label>{mode === 'create' ? <label>{t('common.confirmPassword')}<input type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder={t('auth.confirmYourPassword')} autoComplete="new-password" required disabled={submitting} /></label> : <button className="forgot-link" type="button" onClick={() => changeMode('forgot')}>{t('auth.forgotPassword')}</button>}<button className="auth-primary" type="submit" disabled={submitting}>{submitting ? t('common.pleaseWait') : mode === 'create' ? t('auth.createAccount') : t('auth.signIn')}</button></form>}
+    {mode === 'forgot' && <form onSubmit={submitForgot}><label>{t('common.emailAddress')}<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder={t('auth.emailPlaceholder')} autoComplete="email" required disabled={submitting} /></label><button className="auth-primary" type="submit" disabled={submitting}>{submitting ? t('common.pleaseWait') : t('auth.sendResetLink')}</button></form>}
+    {mode === 'reset-password' && <form onSubmit={submitReset}><label>{t('auth.newPassword')}<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" minLength={12} maxLength={128} required disabled={submitting} /></label><label>{t('auth.confirmNewPassword')}<input type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" minLength={12} maxLength={128} required disabled={submitting} /></label><button className="auth-primary" type="submit" disabled={submitting || !resetToken}>{submitting ? t('common.pleaseWait') : t('auth.resetPassword')}</button></form>}
+    {(mode === 'verify-email' || mode === 'confirm-email-change') && !submitting && !message && !error && <p className="auth-message is-error">{t('auth.invalidSecureLink')}</p>}
+    {mode === 'two-factor' && <form onSubmit={submitTwoFactor}><label>{t('auth.authenticatorOrRecovery')}<input type="text" inputMode="text" autoComplete="one-time-code" value={code} onChange={(event) => setCode(event.target.value)} maxLength={40} required disabled={submitting} /></label><button className="auth-primary" type="submit" disabled={submitting}>{submitting ? t('auth.verifying') : t('auth.verifyAndSignIn')}</button></form>}
     {specialMode && mode !== 'verify-email' && <button className="forgot-link" type="button" onClick={() => changeMode('signin')}>{t('nav.signIn')}</button>}
-    {mode === 'create' && <p className="terms-copy">By creating an account, you agree to the NodeConnect terms and privacy policy.</p>}
+    {mode === 'create' && <p className="terms-copy">{t('auth.terms')}</p>}
     </section></main></div>
 }

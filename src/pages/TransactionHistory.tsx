@@ -7,6 +7,7 @@ import vote from '../assets/icons/Icon-3.svg'
 import chart from '../assets/icons/Icon-20.svg'
 import '../styles/history.css'
 import DashboardLayout from '../components/DashboardLayout'
+import { useAppTranslation } from '../lib/i18n'
 
 type Activity = { type: 'Stake' | 'Claim' | 'Vote'; amount: string; status: 'Completed' | 'Pending'; timestamp: string }
 
@@ -18,6 +19,7 @@ const activities: Activity[] = [
 ]
 
 const activityIcons = { Stake: shield, Claim: claim, Vote: vote }
+const activityTranslationKeys = { Stake: 'transactions.activityStake', Claim: 'transactions.activityClaim', Vote: 'transactions.activityVote' } as const
 
 function SummaryCard({ label, value, unit, change, icon }: { label: string; value: string; unit: string; change: string; icon: string }) {
   return <article className="history-summary-card"><div className="summary-copy"><span className="history-label">{label}</span><strong>{value}<small>{unit}</small></strong><em>↗ {change}</em></div><span className="summary-icon"><img src={icon} alt="" /></span></article>
@@ -28,12 +30,13 @@ function ActivityIcon({ type }: { type: Activity['type'] }) {
 }
 
 export default function TransactionHistory({ embedded = false }: { embedded?: boolean }) {
+  const t = useAppTranslation()
   const [menuOpen, setMenuOpen] = useState(false)
   const content = <div className="site-shell history-page">{!embedded && <Header activePage="history" menuOpen={menuOpen} onMenuToggle={() => setMenuOpen((open) => !open)} />}<main>
-    <section className="history-content section"><div className="history-title-row"><div><h1>Transaction History</h1><p>Monitor your ecosystem interactions, staking rewards, and governance votes across the<br className="history-desktop-break" /> network.</p></div><div className="history-actions"><button type="button">↥ Export CSV</button><button type="button">≡ Filter</button></div></div>
-      <div className="history-summary"><SummaryCard label="Total Rewards Claimed" value="42,891" unit="NODE" change="+12.5% vs last epoch" icon={claim} /><SummaryCard label="Recent Activity Volume" value="1.2M" unit="USD" change="+5.2% 30d trailing" icon={chart} /><article className="history-summary-card network-status"><div className="summary-copy"><span className="history-label">Network<br />Status</span><em>↗ Current Epoch <b>#4,892</b></em><em>Avg Gas Price <b>12 Gwei</b></em></div><span className="status-chip"><i /> Mainnet<br />Live</span></article></div>
-      <div className="history-table-wrap"><table><thead><tr><th>Type</th><th>Amount</th><th>Status</th><th>Timestamp</th><th>Hash</th></tr></thead><tbody>{activities.map((activity) => <tr key={`${activity.type}-${activity.timestamp}`}><td><ActivityIcon type={activity.type} /><span>{activity.type}</span></td><td>{activity.amount}</td><td><span className={`status-pill ${activity.status.toLowerCase()}`}>◉ {activity.status}</span></td><td>{activity.timestamp}</td><td><a href="#transaction" aria-label={`View ${activity.type} transaction`}>↗</a></td></tr>)}</tbody></table><div className="history-table-footer"><span>Showing 1-4 of 128</span><div><button type="button" aria-label="Previous page">‹</button><button type="button" aria-label="Next page">›</button></div></div></div>
+    <section className="history-content section"><div className="history-title-row"><div><h1>{t('transactions.title')}</h1><p>{t('transactions.description')}</p></div><div className="history-actions"><button type="button">↥ {t('transactions.exportCsv')}</button><button type="button">≡ {t('transactions.filter')}</button></div></div>
+      <div className="history-summary"><SummaryCard label={t('transactions.totalRewardsClaimed')} value="42,891" unit="NODE" change={t('transactions.epochComparison', { change: '+12.5%' })} icon={claim} /><SummaryCard label={t('transactions.recentActivityVolume')} value="1.2M" unit="USD" change={t('transactions.trailingComparison', { change: '+5.2%' })} icon={chart} /><article className="history-summary-card network-status"><div className="summary-copy"><span className="history-label">{t('transactions.networkStatus')}</span><em>↗ {t('transactions.currentEpoch')} <b>#4,892</b></em><em>{t('transactions.avgGasPrice')} <b>12 Gwei</b></em></div><span className="status-chip"><i /> {t('transactions.mainnetLive')}</span></article></div>
+      <div className="history-table-wrap"><table><thead><tr><th>{t('common.type')}</th><th>{t('common.amount')}</th><th>{t('common.status')}</th><th>{t('common.dateTime')}</th><th>{t('transactions.hash')}</th></tr></thead><tbody>{activities.map((activity) => <tr key={`${activity.type}-${activity.timestamp}`}><td><ActivityIcon type={activity.type} /><span>{t(activityTranslationKeys[activity.type])}</span></td><td>{activity.amount}</td><td><span className={`status-pill ${activity.status.toLowerCase()}`}>◉ {t(activity.status === 'Completed' ? 'transactions.completed' : 'transactions.pending')}</span></td><td>{activity.timestamp}</td><td><a href="#transaction" aria-label={t('transactions.viewTransaction', { type: t(activityTranslationKeys[activity.type]) })}>↗</a></td></tr>)}</tbody></table><div className="history-table-footer"><span>{t('transactions.showing', { from: 1, to: 4, total: 128 })}</span><div><button type="button" aria-label={t('transactions.previousPage')}>‹</button><button type="button" aria-label={t('transactions.nextPage')}>›</button></div></div></div>
     </section>
   </main>{!embedded && <Footer />}</div>
-  return embedded ? <DashboardLayout activePage="history" title="Transactions" eyebrow="Workspace / Transactions">{content}</DashboardLayout> : content
+  return embedded ? <DashboardLayout activePage="history" title={t('nav.transactions')} eyebrow={`${t('nav.workspace')} / ${t('nav.transactions')}`}>{content}</DashboardLayout> : content
 }

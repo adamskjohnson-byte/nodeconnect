@@ -33,17 +33,18 @@ const navigation: NavItem[] = [
   { label: 'nav.settings', icon: settingsIcon, href: '#settings', active: 'settings' },
 ]
 
-export default function DashboardLayout({ children, activePage, title, eyebrow = 'Workspace / Overview' }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, activePage, title, eyebrow }: DashboardLayoutProps) {
   return <DashboardShell activePage={activePage} title={title} eyebrow={eyebrow}>{children}</DashboardShell>
 }
 
 export function DashboardShell({ children, activePage, title, eyebrow }: DashboardLayoutProps) {
+  const t = useAppTranslation()
   const [menuOpen, setMenuOpen] = useState(false)
   return <div className="dashboard-page">
-    {menuOpen && <button className="dashboard-sidebar-backdrop" type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)} />}
+    {menuOpen && <button className="dashboard-sidebar-backdrop" type="button" aria-label={t('common.close')} onClick={() => setMenuOpen(false)} />}
     <DashboardSidebar activePage={activePage} menuOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     <main className="dashboard-main">
-      <DashboardHeader title={title} eyebrow={eyebrow ?? 'Workspace / Overview'} onMenuOpen={() => setMenuOpen(true)} />
+      <DashboardHeader title={title} eyebrow={eyebrow ?? `${t('nav.workspace')} / ${t('dashboard.title')}`} onMenuOpen={() => setMenuOpen(true)} />
       <div className="dashboard-internal-content">{children}</div>
     </main>
   </div>
@@ -60,9 +61,9 @@ function DashboardSidebar({ activePage, menuOpen, onClose }: { activePage: Dashb
   return <aside className={menuOpen ? 'dashboard-sidebar is-open' : 'dashboard-sidebar'}>
     <div className="dashboard-sidebar-top">
       <a className="dashboard-brand" href="#dashboard"><img src={logo} alt="" /><span>NodeConnect</span></a>
-      <span className="dashboard-brand-status">NODE NETWORK</span>
+      <span className="dashboard-brand-status">{t('dashboard.networkOnline')}</span>
     </div>
-    <nav className="dashboard-nav" aria-label="Dashboard navigation">
+    <nav className="dashboard-nav" aria-label={t('nav.dashboard')}>
       <span className="dashboard-nav-label">{t('nav.workspace')}</span>
       {navigation.map((item) => <a className={item.active === activePage ? 'is-active' : ''} href={item.href} key={item.label} onClick={() => { onClose(); if (item.href === telegramSupportUrl) trackTelegramClick() }} target={item.target} rel={item.target ? 'noopener noreferrer' : undefined}><span className="dashboard-nav-icon"><img src={item.icon} alt="" /></span><span>{t(item.label)}</span>{item.active === activePage && <i />}</a>)}
     </nav>
@@ -73,6 +74,7 @@ function DashboardSidebar({ activePage, menuOpen, onClose }: { activePage: Dashb
 }
 
 function DashboardHeader({ title, eyebrow, onMenuOpen }: { title: string; eyebrow: string; onMenuOpen: () => void }) {
+  const t = useAppTranslation()
   const [name, setName] = useState('NodeConnect')
   useEffect(() => {
     let active = true
@@ -85,8 +87,8 @@ function DashboardHeader({ title, eyebrow, onMenuOpen }: { title: string; eyebro
   }, [])
 
   return <header className="dashboard-topbar">
-    <button className="dashboard-menu-button" type="button" aria-label="Open dashboard navigation" onClick={onMenuOpen}><span /><span /><span /></button>
+    <button className="dashboard-menu-button" type="button" aria-label={t('wallet.openNavigation')} onClick={onMenuOpen}><span /><span /><span /></button>
     <div className="dashboard-topbar-title"><span>{eyebrow}</span><h1>{title}</h1></div>
-    <div className="dashboard-topbar-actions"><button className="dashboard-icon-button" type="button" aria-label="Notifications"><span className="dashboard-notification-dot" /></button><div className="dashboard-user"><UserAvatar className="dashboard-user-mark" name={name} /><div><strong>{name}</strong><span>NodeConnect member</span></div></div></div>
+    <div className="dashboard-topbar-actions"><button className="dashboard-icon-button" type="button" aria-label={t('settings.notifications')}><span className="dashboard-notification-dot" /></button><div className="dashboard-user"><UserAvatar className="dashboard-user-mark" name={name} /><div><strong>{name}</strong><span>{t('profile.nodeMember')}</span></div></div></div>
   </header>
 }

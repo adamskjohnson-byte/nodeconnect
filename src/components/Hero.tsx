@@ -1,5 +1,7 @@
 import networkGraphic from '../assets/network-graphic.svg'
+import { useAppTranslation } from '../lib/i18n'
 
 export default function Hero() {
-  return <section className="hero section" id="top"><div className="hero-copy"><h1>GROW DATA.<br />GROW VALUE.<br />GROW TOGETHER.</h1><p>NodeConnect is a decentralized data infrastructure powering the Web3 frontier with privacy, sustainability, and rewards.</p></div><img className="network-art" src={networkGraphic} alt="" aria-hidden="true" /></section>
+  const t = useAppTranslation()
+  return <section className="hero section" id="top"><div className="hero-copy"><h1>{t('home.heroTitle')}</h1><p>{t('home.heroDescription')}</p></div><img className="network-art" src={networkGraphic} alt="" aria-hidden="true" /></section>
 }

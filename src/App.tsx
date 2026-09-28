@@ -16,7 +16,7 @@ import { getCurrentUser, type AuthUser } from './lib/authApi'
 import { trackActivity } from './lib/activityApi'
 import { getPreferences } from './lib/accountApi'
 import { setSoundPreferences } from './lib/soundService'
-import { i18n } from './lib/i18n'
+import { changeAppLanguage } from './lib/i18n'
 
 const normalProtectedHashes = new Set(['#dashboard', '#connect-wallet', '#staking', '#tokenomics', '#roadmap', '#transaction-history', '#referrals', '#my-nodes', '#profile', '#settings'])
 const adminProtectedHashes = new Set(['#admin', '#admin/activity'])
@@ -52,7 +52,7 @@ export default function App() {
 			if (!active) return
 			setSavedTheme(preferences.theme)
 			setSoundPreferences(preferences.sound_enabled, preferences.sound_volume)
-			void i18n.changeLanguage(preferences.language)
+			void changeAppLanguage(preferences.language)
 			try { localStorage.setItem('nodeconnect_preferences', JSON.stringify(preferences)) } catch { /* storage is optional */ }
 		}).catch(() => undefined)
 		return () => { active = false }
