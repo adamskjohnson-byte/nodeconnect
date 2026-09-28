@@ -48,6 +48,7 @@ try {
         ':password_hash' => password_hash($password, PASSWORD_DEFAULT),
     ]);
     $userId = (int) $pdo->lastInsertId();
+    ensureReferralId($pdo, $userId);
     establishSession($pdo, $userId);
     $verificationToken = createSingleUseToken($pdo, 'email_verification_tokens', $userId, 86400);
     $userQuery = $pdo->prepare('SELECT id, full_name, email, status, role, email_verified_at, created_at, last_login_at FROM users WHERE id = :id');

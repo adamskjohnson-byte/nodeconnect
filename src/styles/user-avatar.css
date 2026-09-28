@@ -1,0 +1,3 @@
+.profile-avatar, .dashboard-user-mark { position: relative; overflow: hidden; }
+.user-avatar-image { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+.user-avatar-fallback { position: relative; display: grid; place-items: center; width: 100%; height: 100%; }

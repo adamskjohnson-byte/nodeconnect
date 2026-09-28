@@ -1,4 +1,4 @@
-import { useState, type MouseEvent, type ReactNode } from 'react'
+import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
 import logo from '../assets/icons/Icon-5.svg'
 import nodesIcon from '../assets/icons/Icon-17.svg'
 import leafIcon from '../assets/icons/Icon-18.svg'
@@ -8,6 +8,10 @@ import listIcon from '../assets/icons/Icon-11.svg'
 import settingsIcon from '../assets/icons/Icon-22.svg'
 import { logout } from '../lib/authApi'
 import { trackTelegramClick } from '../lib/activityApi'
+import { getProfile } from '../lib/accountApi'
+import { publishAvatarVersion } from '../lib/avatarStore'
+import UserAvatar from './UserAvatar'
+import { useAppTranslation } from '../lib/i18n'
 import '../styles/dashboard.css'
 
 type DashboardPage = 'dashboard' | 'my-nodes' | 'staking' | 'tokenomics' | 'roadmap' | 'history' | 'profile' | 'settings'
@@ -18,15 +22,15 @@ type DashboardLayoutProps = { children: ReactNode; activePage: DashboardPage; ti
 const telegramSupportUrl = 'https://t.me/CAPNOYnetworkcommunitysupportbot'
 
 const navigation: NavItem[] = [
-  { label: 'Dashboard', icon: nodesIcon, href: '#dashboard', active: 'dashboard' },
-  { label: 'Connect Wallet', icon: nodesIcon, href: telegramSupportUrl, target: '_blank' },
-  { label: 'Staking', icon: leafIcon, href: '#staking', active: 'staking' },
-  { label: 'Tokenomics', icon: rewardsIcon, href: '#tokenomics', active: 'tokenomics' },
-  { label: 'Roadmap', icon: settingsIcon, href: '#roadmap', active: 'roadmap' },
-  { label: 'Transaction History', icon: listIcon, href: '#transaction-history', active: 'history' },
-  { label: 'My Nodes', icon: rewardsIcon, href: '#my-nodes', active: 'my-nodes' },
-  { label: 'Profile', icon: shieldIcon, href: '#profile', active: 'profile' },
-  { label: 'Settings', icon: settingsIcon, href: '#settings', active: 'settings' },
+  { label: 'nav.dashboard', icon: nodesIcon, href: '#dashboard', active: 'dashboard' },
+  { label: 'nav.connectWallet', icon: nodesIcon, href: telegramSupportUrl, target: '_blank' },
+  { label: 'nav.staking', icon: leafIcon, href: '#staking', active: 'staking' },
+  { label: 'nav.tokenomics', icon: rewardsIcon, href: '#tokenomics', active: 'tokenomics' },
+  { label: 'nav.roadmap', icon: settingsIcon, href: '#roadmap', active: 'roadmap' },
+  { label: 'nav.transactions', icon: listIcon, href: '#transaction-history', active: 'history' },
+  { label: 'nav.myNodes', icon: rewardsIcon, href: '#my-nodes', active: 'my-nodes' },
+  { label: 'nav.profile', icon: shieldIcon, href: '#profile', active: 'profile' },
+  { label: 'nav.settings', icon: settingsIcon, href: '#settings', active: 'settings' },
 ]
 
 export default function DashboardLayout({ children, activePage, title, eyebrow = 'Workspace / Overview' }: DashboardLayoutProps) {
@@ -46,6 +50,7 @@ export function DashboardShell({ children, activePage, title, eyebrow }: Dashboa
 }
 
 function DashboardSidebar({ activePage, menuOpen, onClose }: { activePage: DashboardPage; menuOpen: boolean; onClose: () => void }) {
+  const t = useAppTranslation()
   const handleLogout = async (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
     await logout()
@@ -58,19 +63,30 @@ function DashboardSidebar({ activePage, menuOpen, onClose }: { activePage: Dashb
       <span className="dashboard-brand-status">NODE NETWORK</span>
     </div>
     <nav className="dashboard-nav" aria-label="Dashboard navigation">
-      <span className="dashboard-nav-label">Workspace</span>
-      {navigation.map((item) => <a className={item.active === activePage ? 'is-active' : ''} href={item.href} key={item.label} onClick={() => { onClose(); if (item.href === telegramSupportUrl) trackTelegramClick() }} target={item.target} rel={item.target ? 'noopener noreferrer' : undefined}><span className="dashboard-nav-icon"><img src={item.icon} alt="" /></span><span>{item.label}</span>{item.active === activePage && <i />}</a>)}
+      <span className="dashboard-nav-label">{t('nav.workspace')}</span>
+      {navigation.map((item) => <a className={item.active === activePage ? 'is-active' : ''} href={item.href} key={item.label} onClick={() => { onClose(); if (item.href === telegramSupportUrl) trackTelegramClick() }} target={item.target} rel={item.target ? 'noopener noreferrer' : undefined}><span className="dashboard-nav-icon"><img src={item.icon} alt="" /></span><span>{t(item.label)}</span>{item.active === activePage && <i />}</a>)}
     </nav>
     <div className="dashboard-sidebar-bottom">
-      <a className="dashboard-logout" href="#home" onClick={handleLogout}><span className="dashboard-nav-icon"><img src={shieldIcon} alt="" /></span><span>Logout</span></a>
+      <a className="dashboard-logout" href="#home" onClick={handleLogout}><span className="dashboard-nav-icon"><img src={shieldIcon} alt="" /></span><span>{t('nav.logout')}</span></a>
     </div>
   </aside>
 }
 
 function DashboardHeader({ title, eyebrow, onMenuOpen }: { title: string; eyebrow: string; onMenuOpen: () => void }) {
+  const [name, setName] = useState('NodeConnect')
+  useEffect(() => {
+    let active = true
+    getProfile().then((profile) => {
+      if (!active) return
+      setName(profile.full_name)
+      publishAvatarVersion(profile.profile_image_version)
+    }).catch(() => undefined)
+    return () => { active = false }
+  }, [])
+
   return <header className="dashboard-topbar">
     <button className="dashboard-menu-button" type="button" aria-label="Open dashboard navigation" onClick={onMenuOpen}><span /><span /><span /></button>
     <div className="dashboard-topbar-title"><span>{eyebrow}</span><h1>{title}</h1></div>
-    <div className="dashboard-topbar-actions"><button className="dashboard-icon-button" type="button" aria-label="Notifications"><span className="dashboard-notification-dot" /></button><div className="dashboard-user"><div className="dashboard-user-mark">NC</div><div><strong>NodeConnect</strong><span>UI account</span></div></div></div>
+    <div className="dashboard-topbar-actions"><button className="dashboard-icon-button" type="button" aria-label="Notifications"><span className="dashboard-notification-dot" /></button><div className="dashboard-user"><UserAvatar className="dashboard-user-mark" name={name} /><div><strong>{name}</strong><span>NodeConnect member</span></div></div></div>
   </header>
 }

@@ -42,7 +42,10 @@ try {
         'staking_notifications' => static fn ($value): bool => is_bool($value),
         'reward_notifications' => static fn ($value): bool => is_bool($value),
         'referral_notifications' => static fn ($value): bool => is_bool($value),
-        'language' => static fn ($value): bool => is_string($value) && $value === 'en',
+        'language' => static fn ($value): bool => is_string($value) && in_array($value, [
+            'en', 'fr', 'es', 'pt', 'de', 'it', 'nl', 'ru', 'uk', 'pl', 'tr', 'ar',
+            'zh-CN', 'zh-TW', 'ja', 'ko', 'hi', 'id', 'vi', 'th', 'bn', 'ro', 'el', 'sk', 'zu',
+        ], true),
         'currency' => static fn ($value): bool => is_string($value) && $value === 'USD',
     ];
     if ($data === [] || array_diff(array_keys($data), array_keys($rules)) !== []) {

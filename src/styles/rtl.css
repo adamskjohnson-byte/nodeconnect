@@ -1,0 +1,24 @@
+html[dir="rtl"] body { direction: rtl; }
+html[dir="rtl"] .site-shell,
+html[dir="rtl"] .auth-page,
+html[dir="rtl"] .dashboard-page,
+html[dir="rtl"] .admin-page,
+html[dir="rtl"] .connect-wallet-page,
+html[dir="rtl"] .wallet-flow-page { direction: rtl; }
+html[dir="rtl"] .dashboard-sidebar { order: 2; }
+html[dir="rtl"] .dashboard-main { order: 1; }
+html[dir="rtl"] .profile-account-status { margin-right: auto; margin-left: 0; padding-right: 22px; padding-left: 0; border-right: 1px solid rgba(255,255,255,.08); border-left: 0; }
+html[dir="rtl"] .profile-info-list dd { direction: rtl; }
+html[dir="rtl"] .settings-security-dialog,
+html[dir="rtl"] .settings-security-dialog input,
+html[dir="rtl"] .settings-security-form input,
+html[dir="rtl"] .profile-email-form input { text-align: right; }
+html[dir="rtl"] .settings-security-dialog button { direction: rtl; }
+@media (max-width: 700px) {
+  html[dir="rtl"] .dashboard-sidebar { right: 0; left: auto; transform: translateX(102%); }
+  html[dir="rtl"] .dashboard-sidebar.is-open { transform: translateX(0); }
+  html[dir="rtl"] .profile-account-status { padding-right: 12px; }
+}
+@media (max-width: 390px) {
+  html[dir="rtl"] .profile-account-status { padding-right: 7px; }
+}

@@ -1,4 +1,5 @@
 import type { AuthUser } from './authApi'
+import type { LanguageCode } from './i18n'
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1/nodeconnect/api').replace(/\/$/, '')
 
@@ -7,7 +8,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const response = await fetch(`${apiBaseUrl}${path}`, {
       ...options,
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      headers: { ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }), ...(options.headers || {}) },
     })
     const payload = await response.json() as T & { success?: boolean; message?: string }
     if (!response.ok || payload.success === false) {
@@ -28,7 +29,7 @@ export type UserPreferences = {
   staking_notifications: boolean
   reward_notifications: boolean
   referral_notifications: boolean
-  language: 'en'
+  language: LanguageCode
   currency: 'USD'
 }
 
@@ -46,9 +47,20 @@ export type ActiveSession = {
 
 export type RecoveryCodeResponse = { success: true; recovery_codes: string[]; message?: string }
 export type TwoFactorSetup = { success: true; secret: string; provisioning_uri: string }
+export type AccountProfile = AuthUser & { referral_id: string; profile_image_version: string | null }
 
-export const getProfile = async () => (await request<{ success: true; user: AuthUser }>('/account/profile.php')).user
-export const updateProfile = async (fullName: string) => (await request<{ success: true; user: AuthUser }>('/account/profile.php', { method: 'POST', body: JSON.stringify({ full_name: fullName }) })).user
+export const getProfile = async () => (await request<{ success: true; user: AccountProfile }>('/account/profile.php')).user
+export const updateProfile = async (fullName: string) => (await request<{ success: true; user: AccountProfile }>('/account/profile.php', { method: 'POST', body: JSON.stringify({ full_name: fullName }) })).user
+export const getEmailChangeStatus = () => request<{ success: true; pending_email: string | null; expires_at: string | null }>('/account/email-change.php')
+export const getProfilePictureUrl = (version: string | null) => version ? `${apiBaseUrl}/account/profile-picture.php?v=${encodeURIComponent(version)}` : null
+export const uploadProfilePicture = async (file: File) => {
+  const form = new FormData()
+  form.append('picture', file)
+  return request<{ success: true; profile_image_version: string; message: string }>('/account/profile-picture.php', { method: 'POST', body: form })
+}
+export const removeProfilePicture = () => request<{ success: true; profile_image_version: null; message: string }>('/account/profile-picture.php', { method: 'POST', body: JSON.stringify({ action: 'remove' }) })
+export const requestEmailChange = (newEmail: string, password: string) => request<{ success: true; message: string }>('/account/email-change.php', { method: 'POST', body: JSON.stringify({ new_email: newEmail, password }) })
+export const confirmEmailChange = (token: string) => request<{ success: true; message: string }>('/auth/confirm-email-change.php', { method: 'POST', body: JSON.stringify({ token }) })
 export const getPreferences = async () => (await request<{ success: true; preferences: UserPreferences }>('/settings/preferences.php')).preferences
 export const updatePreferences = async (preferences: Partial<UserPreferences>) => (await request<{ success: true; preferences: UserPreferences }>('/settings/preferences.php', { method: 'POST', body: JSON.stringify(preferences) })).preferences
 export const changePassword = (data: { current_password: string; new_password: string; confirm_password: string }) => request<{ success: true; message: string }>('/account/password.php', { method: 'POST', body: JSON.stringify(data) })

@@ -19,6 +19,8 @@ function accountAudit(PDO $pdo, ?int $userId, string $eventType, array $metadata
         'password_reset_requested', 'password_reset_completed', 'email_verification_sent', 'email_verified',
         'two_factor_setup_started', 'two_factor_enabled', 'two_factor_disabled', 'recovery_code_used', 'recovery_codes_regenerated',
         'session_revoked', 'sessions_revoked', 'account_deactivation_requested', 'account_deactivated',
+        'profile_picture_changed', 'profile_picture_removed', 'referral_id_issued',
+        'email_change_requested', 'email_change_request_failed', 'email_change_confirmed',
     ];
     if (!in_array($eventType, $allowedEvents, true)) {
         throw new InvalidArgumentException('Unsupported security event.');
@@ -35,6 +37,37 @@ function accountAudit(PDO $pdo, ?int $userId, string $eventType, array $metadata
         ':user_agent' => activityUserAgent() !== '' ? substr(activityUserAgent(), 0, 500) : null,
         ':metadata' => $metadata === [] ? null : json_encode($metadata, JSON_UNESCAPED_SLASHES),
     ]);
+}
+
+function ensureReferralId(PDO $pdo, int $userId): string
+{
+    $find = $pdo->prepare('SELECT referral_id FROM user_referrals WHERE user_id = :user_id LIMIT 1');
+    $find->execute([':user_id' => $userId]);
+    $existing = $find->fetchColumn();
+    if (is_string($existing) && $existing !== '') {
+        return $existing;
+    }
+
+    for ($attempt = 0; $attempt < 8; $attempt++) {
+        $referralId = 'NC-' . strtoupper(bin2hex(random_bytes(10)));
+        try {
+            $insert = $pdo->prepare('INSERT INTO user_referrals (user_id, referral_id) VALUES (:user_id, :referral_id)');
+            $insert->execute([':user_id' => $userId, ':referral_id' => $referralId]);
+            accountAudit($pdo, $userId, 'referral_id_issued');
+            return $referralId;
+        } catch (PDOException $error) {
+            if ((int) ($error->errorInfo[1] ?? 0) !== 1062) {
+                throw $error;
+            }
+            $find->execute([':user_id' => $userId]);
+            $existing = $find->fetchColumn();
+            if (is_string($existing) && $existing !== '') {
+                return $existing;
+            }
+        }
+    }
+
+    throw new RuntimeException('Unable to allocate a unique referral identifier.');
 }
 
 function rateLimitAllowed(PDO $pdo, string $action, string $scope, int $maximum, int $windowSeconds, int $blockSeconds = 900): bool

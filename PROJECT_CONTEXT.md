@@ -298,3 +298,13 @@ The page uses the supplied black, navy, neon green, cyan, lilac, and pink palett
 - Resend runs only in PHP through `api/email_service.php`; configure `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `RESEND_FROM_NAME` only on the PHP host. TOTP seed encryption and persistent rate limits use separate server-side keys.
 - Composer locks `pragmarx/google2fa`; Railway's Docker build installs locked PHP dependencies. Setup, migration, limitations, and test steps are in `docs/PROFILE_SETTINGS.md`.
 - Apply migration 002 manually and once in local/Railway MySQL before testing these account endpoints. No database migration was run automatically.
+
+## Account Extensions (2026-09)
+
+- Added additive migration `database/migrations/003_profile_email_referral.sql`; apply it manually after migration 002. It creates owner-scoped MySQL profile-image storage, single-user pending email-change state, and unique referral IDs. It was not applied as part of this work.
+- Profile image bytes use persistent Railway MySQL rather than the ephemeral PHP container filesystem. Uploads accept JPEG/PNG/WebP, max 2 MiB and 2048px dimensions; resizing is not configured because the current PHP image lacks GD.
+- Email change reuses the existing password/session/origin/rate-limit/audit/Resend infrastructure. The current address changes only after a hashed, expiring, single-use confirmation token is redeemed.
+- Existing referral attribution/rewards do not exist. A stable random referral ID is assigned at registration or on the first profile load for an existing user.
+- Existing AES-256-GCM TOTP, login challenge, replay prevention, and recovery-code backend was retained; the Settings enrollment/disable/recovery interface now uses modal steps.
+- `i18next`/`react-i18next` now provide 25 locale choices and Arabic RTL handling with saved account/local preferences. Current translated coverage is limited to shared navigation and core account/settings controls; other routes and server-originated messages still contain English copy. See `docs/PROFILE_SETTINGS.md` for exact validation and limitations.
+- Settings sound now uses a small Web Audio service tied to existing sound preferences. Browser-policy playback behavior still needs a manual audio check.

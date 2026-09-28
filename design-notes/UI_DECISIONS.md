@@ -132,3 +132,10 @@ Changes to layout, spacing, colors, typography, or components should be recorded
 - Added `MyNodes.tsx` and `my-nodes.css` as a UI-only `#my-nodes` internal page using the existing Dashboard shell and visual system.
 - The page uses static zero/empty values for node statistics, infrastructure status, activity, health, and rewards. No real node data is fabricated.
 - Node activation is intentionally disabled until future backend, wallet, payment, and node deployment requirements are defined.
+
+## Account Extensions
+
+- Profile photo controls, verified email change, and referral ID are presented inside the existing Profile surface; the shared dashboard avatar uses the same server-owned image version and fallback treatment.
+- TOTP setup and recovery-code confirmation use native modal dialogs and retain the existing PHP security flow.
+- Sound effects use restrained synthesized Web Audio cues; no external or copyrighted audio assets are used.
+- The selected interface locale follows saved account preferences, with Arabic RTL layout rules. The approved NodeConnect logo, admin shell, wallet connection behavior, and visitor-monitoring flow remain unchanged.
