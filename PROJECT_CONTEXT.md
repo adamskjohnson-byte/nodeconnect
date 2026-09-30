@@ -335,3 +335,11 @@ The page uses the supplied black, navy, neon green, cyan, lilac, and pink palett
 - `sendWelcomeEmailIfNeeded()` runs only after a password-only login session commit or after successful TOTP/recovery verification and session commit. It also checks active status and `email_verified_at`; registration, OTP verification, password acceptance before 2FA, failed 2FA, email changes, and refreshes do not send.
 - A conditional atomic claim serializes concurrent first-login attempts. Resend acceptance is required before `welcome_email_sent_at` is set. Failed sends release the claim for a future successful-login retry; abandoned claims can be reclaimed after five minutes. Welcome email failure is best-effort and never reverses a successful login.
 - The email uses the existing server-side Resend service and `NODECONNECT_FRONTEND_URL`, an inline NodeConnect-branded HTML template, and the user's verified email/name. No notification or optional preference is used for this mandatory transactional welcome message.
+
+## White Paper Carousel
+
+- Added one reusable White Paper carousel directly after the `WHY NODECONNECT?` heading and before the existing four feature cards. The following Staking Promotion section and all other landing-page content remain in place.
+- The eight original 764 × 1080 JPEG pages are stored in `src/assets/whitepaper/whitepaper-1.jpeg` through `whitepaper-8.jpeg` and imported locally; they match the supplied `design-reference/WhatsApp Image 1.jpeg` through `WhatsApp Image 8.jpeg` byte-for-byte.
+- One page is displayed at a time inside a portrait-ratio frame with `object-fit: contain`. Autoplay advances every 5.6 seconds with a subtle fade; previous/next buttons and page dots provide manual navigation and reset the autoplay delay.
+- Touch/pointer swipes navigate horizontally while `touch-action: pan-y pinch-zoom` preserves natural vertical scrolling. ArrowLeft/ArrowRight navigate while focus is within the carousel; controls have descriptive accessible names, page-specific image alt text, and visible focus states.
+- `prefers-reduced-motion: reduce` disables autoplay and the slide fade while leaving manual navigation available. The component owns and cleans up its timer and media-query listener; no carousel dependency was added.
