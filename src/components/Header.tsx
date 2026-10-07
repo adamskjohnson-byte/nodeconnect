@@ -19,7 +19,7 @@ export default function Header({ menuOpen, onMenuToggle, activePage = 'home', wa
     })}</nav>
     <div className="header-actions">
       <a className="button button-small button-secondary" href={signInHref}>{t('nav.signIn')}</a>
-      <a className="button button-small" href={walletHref} target="_blank" rel="noopener noreferrer" onClick={() => { if (walletHref === telegramSupportUrl) trackTelegramClick() }}>{t('nav.connectWallet')}</a>
+      <a className="button button-small" href={walletHref} target="_blank" rel="noopener noreferrer" onClick={() => { if (walletHref === telegramSupportUrl) trackTelegramClick() }}>CLAIM CNPY</a>
     </div>
   </div></header>
 }
