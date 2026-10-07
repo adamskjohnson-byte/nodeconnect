@@ -1,0 +1,20 @@
+.landing-video { padding-top: 10px; padding-bottom: 60px; }
+.landing-video-header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.landing-video-kicker { color: var(--green); font: 600 10px 'Barlow Condensed', sans-serif; letter-spacing: 2px; text-transform: uppercase; }
+.landing-video-header h2 { margin: 0; color: #fff; font-size: clamp(22px, 2vw, 30px); font-weight: 600; }
+.landing-video-frame { width: min(100%, 1220px); margin: 0 auto; border: 1px solid rgba(76,215,246,.22); border-radius: 12px; background: #000; box-shadow: 0 0 32px rgba(0,255,136,.06), inset 0 0 0 1px rgba(255,255,255,.02); overflow: hidden; }
+.landing-video-player { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; background: #000; }
+@media (max-width: 700px) {
+  .landing-video { padding-top: 0; padding-bottom: 54px; }
+  .landing-video-header { margin-bottom: 14px; }
+  .landing-video-frame { border-radius: 10px; }
+}
+@media (max-width: 390px) {
+  .landing-video { padding-bottom: 46px; }
+  .landing-video-header { align-items: flex-end; }
+  .landing-video-kicker { font-size: 9px; letter-spacing: 1.5px; }
+  .landing-video-header h2 { font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-video-player { transition: none; }
+}
