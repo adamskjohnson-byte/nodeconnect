@@ -15,7 +15,7 @@ export default function Header({ menuOpen, onMenuToggle, activePage = 'home', wa
     <nav className="primary-nav" aria-label="Primary navigation">{links.map((link) => {
       const isActive = link.key === 'nav.home' && activePage === 'home'
       const hiddenClass = link.hiddenOnHeader ? 'nav-hidden-home' : ''
-      return <a className={`${isActive ? 'active' : ''} ${hiddenClass}`.trim()} href={link.href} key={link.key || link.label} target={link.external ? '_blank' : undefined} rel={link.external ? 'noopener noreferrer' : undefined}>{link.key ? t(link.key) : link.label}</a>
+      return <a className={`${isActive ? 'active' : ''} ${hiddenClass} ${link.label === 'Binance' ? 'nav-binance' : ''}`.trim()} href={link.href} key={link.key || link.label} target={link.external ? '_blank' : undefined} rel={link.external ? 'noopener noreferrer' : undefined}>{link.key ? t(link.key) : link.label}</a>
     })}</nav>
     <div className="header-actions">
       <a className="button button-small button-secondary" href={signInHref}>{t('nav.signIn')}</a>
