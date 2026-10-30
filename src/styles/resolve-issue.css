@@ -1,0 +1,22 @@
+.resolve-issue-main { width: min(100% - 40px, 1120px); min-height: calc(100vh - 41px); margin: 0 auto; padding: 54px 0 74px; }
+.resolve-issue-heading { margin: 0 auto 30px; text-align: center; }
+.resolve-issue-eyebrow { color: var(--green); font: 600 11px 'Barlow Condensed', sans-serif; letter-spacing: 2px; }
+.resolve-issue-heading h1 { margin: 9px 0 0; color: #fff; font-size: clamp(32px, 4vw, 46px); line-height: 1.12; }
+.resolve-issue-heading p { margin: 10px 0 0; color: #b6c3ca; font-size: 15px; line-height: 1.5; }
+.resolve-issue-selection { width: fit-content; max-width: 100%; margin: 0 auto 20px; padding: 9px 12px 9px 16px; display: flex; align-items: center; flex-wrap: wrap; justify-content: center; gap: 12px; border: 1px solid rgba(0,255,136,.22); border-radius: 999px; background: rgba(0,255,136,.045); color: #bdcbd0; font-size: 12px; }
+.resolve-issue-selection strong { color: var(--green); font-weight: 600; }
+.resolve-issue-selection button { padding: 5px 10px; border: 1px solid rgba(76,215,246,.28); border-radius: 999px; background: rgba(12,19,34,.8); color: var(--cyan); font-size: 11px; cursor: pointer; }
+.resolve-issue-selection button:hover { border-color: var(--green); color: var(--green); }
+.resolve-issue-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.resolve-issue-card { min-width: 0; min-height: 88px; padding: 14px; display: grid; grid-template-columns: 42px minmax(0, 1fr) 14px; align-items: center; gap: 12px; border: 1px solid rgba(76,215,246,.13); border-radius: 9px; background: linear-gradient(125deg, rgba(25,31,47,.82), rgba(12,19,34,.88)); color: #edf5f5; text-align: left; cursor: pointer; transition: border-color .16s ease, background-color .16s ease, transform .16s ease, box-shadow .16s ease; }
+.resolve-issue-card:hover { transform: translateY(-2px); border-color: rgba(0,255,136,.52); background: linear-gradient(125deg, rgba(20,48,44,.88), rgba(12,25,34,.95)); box-shadow: 0 8px 22px rgba(0,0,0,.2); }
+.resolve-issue-card:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.resolve-issue-card.is-selected { border-color: rgba(0,255,136,.72); box-shadow: inset 0 0 0 1px rgba(0,255,136,.18); }
+.resolve-issue-icon { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid rgba(0,255,136,.18); border-radius: 8px; background: rgba(0,255,136,.06); }
+.resolve-issue-icon img { display: block; width: 22px; height: 22px; object-fit: contain; }
+.resolve-issue-name { min-width: 0; font-size: 13px; font-weight: 500; line-height: 1.35; overflow-wrap: anywhere; }
+.resolve-issue-arrow { justify-self: end; color: var(--cyan); font-size: 23px; line-height: 1; }
+@media (max-width: 900px) { .resolve-issue-main { width: min(100% - 36px, 760px); padding-top: 44px; }.resolve-issue-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }.resolve-issue-card { grid-template-columns: 38px minmax(0, 1fr) 12px; gap: 9px; padding: 12px; }.resolve-issue-icon { width: 38px; height: 38px; }.resolve-issue-icon img { width: 21px; height: 21px; } }
+@media (max-width: 600px) { .resolve-issue-main { width: calc(100% - 32px); min-height: calc(100vh - 58px); padding: 34px 0 48px; }.resolve-issue-heading { margin-bottom: 24px; }.resolve-issue-heading h1 { font-size: 34px; }.resolve-issue-heading p { font-size: 14px; }.resolve-issue-selection { margin-bottom: 16px; }.resolve-issue-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }.resolve-issue-card { min-height: 82px; grid-template-columns: 34px minmax(0, 1fr) 10px; gap: 8px; padding: 10px; border-radius: 8px; }.resolve-issue-icon { width: 34px; height: 34px; }.resolve-issue-icon img { width: 19px; height: 19px; }.resolve-issue-name { font-size: 12px; }.resolve-issue-arrow { font-size: 20px; } }
+@media (max-width: 350px) { .resolve-issue-grid { grid-template-columns: 1fr; }.resolve-issue-card { min-height: 74px; grid-template-columns: 40px minmax(0, 1fr) 14px; }.resolve-issue-icon { width: 40px; height: 40px; }.resolve-issue-icon img { width: 22px; height: 22px; }.resolve-issue-name { font-size: 13px; } }
+@media (max-width: 350px) { .resolve-issue-page .primary-nav { display: none; }.resolve-issue-page .header-actions { gap: 4px; }.resolve-issue-page .button-small { width: 78px; font-size: 8px; } }

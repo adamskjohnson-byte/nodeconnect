@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import MyNodes from './pages/MyNodes'
+import ResolveIssue from './pages/ResolveIssue'
 import AdminActivity from './pages/AdminActivity'
 import AdminDashboard from './pages/AdminDashboard'
 import { getCurrentUser, type AuthUser } from './lib/authApi'
@@ -122,6 +123,7 @@ export default function App() {
 	if ((normalProtectedHashes.has(hash) || adminProtectedHashes.has(hash)) && !authChecked) return null
 
 	if (hash.startsWith('#auth')) return <Auth />
+	if (hash.startsWith('#resolve-issue')) return <ResolveIssue />
 	if (hash === '#roadmap') return <Roadmap embedded />
 	if (hash === '#transaction-history') return <TransactionHistory embedded />
 	if (hash === '#referrals') return <Dashboard />
